@@ -2,6 +2,8 @@
 
 > Our solution to the **CivicResolve** challenge (PromptWars × GDG on Campus PSG iTech).
 
+**Live demo:** https://metron-ai.onrender.com · **Repo:** https://github.com/Cholan-kinnera/metron-ai
+
 Metron AI lets citizens report potholes, overflowing garbage, broken streetlights, water leaks and other civic issues in
 plain language (plus an optional photo). **Google Gemini** reads the text *and* the image, classifies the issue, judges its
 urgency, and routes it to the responsible municipal department. Every ticket is tracked publicly from **Reported → In
