@@ -1,7 +1,5 @@
-import { DEPARTMENTS, slaState, type Department } from './domain.js';
+import { DEPARTMENTS, HOUR_MS, slaState, type Department } from './domain.js';
 import type { Issue } from './schema.js';
-
-const HOUR_MS = 3_600_000;
 
 export interface Analytics {
   total: number;

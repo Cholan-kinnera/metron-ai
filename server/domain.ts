@@ -32,7 +32,8 @@ export type Department = (typeof DEPARTMENTS)[number];
 /** Service-level target (hours to resolve) for each priority. */
 export const SLA_HOURS: Record<Priority, number> = { Critical: 24, High: 72, Medium: 168, Low: 336 };
 
-const HOUR_MS = 3_600_000;
+/** Milliseconds in one hour. */
+export const HOUR_MS = 3_600_000;
 
 /**
  * SLA state of an issue. Resolved issues are judged at the moment they were resolved,

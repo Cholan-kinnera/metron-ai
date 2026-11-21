@@ -23,6 +23,10 @@ function safeEqual(a: string, b: string): boolean {
   return left.length === right.length && timingSafeEqual(left, right);
 }
 
+/** Per-IP rate limiter allowing `limit` requests per minute. */
+const perMinuteLimit = (limit: number) =>
+  rateLimit({ windowMs: 60_000, limit, standardHeaders: 'draft-8', legacyHeaders: false });
+
 /** Public view omits the raw photo from list responses to keep payloads small. */
 const summary = ({ image, ...rest }: Issue) => ({ ...rest, hasImage: Boolean(image) });
 
@@ -53,13 +57,8 @@ export function createApp({ store, adminKey, clientDir }: AppOptions) {
   };
 
   const api = express.Router();
-  api.use(rateLimit({ windowMs: 60_000, limit: 120, standardHeaders: 'draft-8', legacyHeaders: false }));
-  const submitLimit = rateLimit({
-    windowMs: 60_000,
-    limit: 10,
-    standardHeaders: 'draft-8',
-    legacyHeaders: false,
-  });
+  api.use(perMinuteLimit(120));
+  const submitLimit = perMinuteLimit(10);
 
   api.get('/health', (_req, res) => {
     res.json({ ok: true, ai: process.env.GEMINI_API_KEY ? 'gemini' : 'rules' });
