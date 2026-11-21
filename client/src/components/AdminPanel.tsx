@@ -89,7 +89,7 @@ export function AdminPanel({ stats, onChanged, onOpen }: { stats?: Stats; onChan
       {!authed ? (
         <form onSubmit={onLogin} className="reveal card flex max-w-lg flex-col gap-3 p-6 sm:flex-row">
           <label htmlFor={`${ids}-key`} className="sr-only">Admin key</label>
-          <input id={`${ids}-key`} type="password" className="field" placeholder="Admin key (demo: civic-admin)" value={key} onChange={(e) => setKey(e.target.value)} autoComplete="current-password" required />
+          <input id={`${ids}-key`} type="password" className="field" placeholder="Admin key" value={key} onChange={(e) => setKey(e.target.value)} autoComplete="current-password" required />
           <button type="submit" className="btn-primary shrink-0">Unlock</button>
         </form>
       ) : (
