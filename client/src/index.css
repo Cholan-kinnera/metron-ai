@@ -11,8 +11,9 @@
   --color-muted: #52607a;
   --color-sky: #6aa7ff;
   --color-blush: #f7b4d0;
-  --font-display: 'Fraunces', Georgia, serif;
-  --font-sans: 'Manrope', system-ui, sans-serif;
+  --font-display: 'Public Sans', system-ui, sans-serif;
+  --font-sans: 'Public Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 }
 
 html.lenis, html.lenis body { height: auto; }

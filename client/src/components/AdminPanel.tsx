@@ -104,7 +104,7 @@ export function AdminPanel({ stats, onChanged, onOpen }: { stats?: Stats; onChan
               ].map(([label, value]) => (
                 <div key={label} className="card p-5">
                   <dt className="text-xs font-bold uppercase tracking-widest text-muted">{label}</dt>
-                  <dd className="font-display text-4xl font-bold">{value}</dd>
+                  <dd className="mt-1 text-3xl font-bold tracking-tight tabular-nums">{value}</dd>
                 </div>
               ))}
             </dl>
@@ -145,7 +145,7 @@ export function AdminPanel({ stats, onChanged, onOpen }: { stats?: Stats; onChan
                       <button type="button" className="text-left font-semibold hover:underline" onClick={() => onOpen(issue.id)}>
                         {issue.title}
                       </button>
-                      <p className="text-xs text-muted">{issue.id} · {issue.location.address}</p>
+                      <p className="text-xs text-muted"><span className="font-mono">{issue.id}</span> · {issue.location.address}</p>
                     </th>
                     <td className="p-4">
                       <select aria-label={`Status for ${issue.id}`} className="field py-2" value={issue.status} onChange={(e) => update(issue.id, { status: e.target.value as IssueSummary['status'] })}>

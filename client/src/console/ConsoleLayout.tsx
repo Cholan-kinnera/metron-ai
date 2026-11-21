@@ -7,13 +7,13 @@ export function ConsoleLayout({ route, aiMode, children }: { route: ConsoleRoute
     <div className="min-h-svh lg:grid lg:grid-cols-[16rem_1fr]">
       <aside className="sticky top-0 z-30 bg-ink/90 text-white backdrop-blur-xl lg:h-svh">
         <div className="flex items-center justify-between gap-4 px-4 py-4 lg:flex-col lg:items-stretch lg:px-5 lg:py-6">
-          <a href={hrefFor('home')} className="flex items-center gap-2 font-display text-xl font-bold">
+          <a href={hrefFor('home')} className="flex items-center gap-2 text-lg font-bold tracking-tight">
             <img src="/favicon.svg" alt="" className="size-8" />
             Metron AI
           </a>
-          <p className="hidden items-center gap-2 rounded-full border border-white/15 px-3 py-1 text-xs lg:inline-flex">
+          <p className="hidden items-center gap-2 text-xs text-white/60 lg:inline-flex">
             <span aria-hidden="true" className={`size-2 rounded-full ${aiMode === 'gemini' ? 'bg-emerald-400' : 'bg-signal'}`} />
-            {aiMode === 'gemini' ? 'Gemini online' : 'Rule engine'}
+            {aiMode === 'gemini' ? 'Google Gemini connected' : 'Offline triage (rule engine)'}
           </p>
         </div>
         <nav aria-label="Console" className="overflow-x-auto px-2 pb-2 lg:px-3">
@@ -24,11 +24,10 @@ export function ConsoleLayout({ route, aiMode, children }: { route: ConsoleRoute
                   href={hrefFor(r.id)}
                   aria-current={route === r.id ? 'page' : undefined}
                   className={`flex items-center gap-3 whitespace-nowrap rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
-                    route === r.id ? 'bg-signal text-ink' : 'text-white/80 hover:bg-white/10'
+                    route === r.id ? 'bg-white/10 text-white shadow-[inset_3px_0_0_var(--color-signal)]' : 'text-white/65 hover:bg-white/5 hover:text-white'
                   }`}
                 >
-                  <span aria-hidden="true" className="w-4 text-center">{r.icon}</span>
-                  {r.label}
+                                    {r.label}
                 </a>
               </li>
             ))}

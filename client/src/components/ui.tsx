@@ -1,32 +1,35 @@
 import type { ReactNode } from 'react';
 import { STATUSES, type Priority, type Status } from '../../../server/domain';
 
-const PRIORITY_STYLE: Record<Priority, string> = {
-  Low: 'bg-emerald-100 text-emerald-900 border-emerald-300',
-  Medium: 'bg-sky-100 text-sky-900 border-sky-300',
-  High: 'bg-amber-100 text-amber-900 border-amber-300',
-  Critical: 'bg-red-100 text-red-900 border-red-300',
+const PRIORITY_BAR: Record<Priority, string> = {
+  Low: 'bg-slate-400',
+  Medium: 'bg-sky-600',
+  High: 'bg-amber-500',
+  Critical: 'bg-red-600',
 };
 
-const STATUS_STYLE: Record<Status, string> = {
-  Reported: 'bg-white text-ink border-line',
-  'In Progress': 'bg-signal/20 text-signal-deep border-signal/50',
-  Resolved: 'bg-emerald-600 text-white border-emerald-700',
+const STATUS_BAR: Record<Status, string> = {
+  Reported: 'bg-slate-400',
+  'In Progress': 'bg-amber-500',
+  Resolved: 'bg-emerald-600',
 };
 
-const pill = 'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold';
-
-export function PriorityBadge({ priority }: { priority: Priority }) {
+/** Plain-text indicator: a short colour rule plus the label, so meaning never relies on colour. */
+function Indicator({ bar, children }: { bar: string; children: ReactNode }) {
   return (
-    <span className={`${pill} ${PRIORITY_STYLE[priority]}`}>
-      <span aria-hidden="true" className="size-1.5 rounded-full bg-current" />
-      {priority} priority
+    <span className="inline-flex items-center gap-2 whitespace-nowrap text-sm font-medium text-ink">
+      <span aria-hidden="true" className={`h-3.5 w-[3px] rounded-full ${bar}`} />
+      {children}
     </span>
   );
 }
 
+export function PriorityBadge({ priority }: { priority: Priority }) {
+  return <Indicator bar={PRIORITY_BAR[priority]}>{priority}</Indicator>;
+}
+
 export function StatusBadge({ status }: { status: Status }) {
-  return <span className={`${pill} ${STATUS_STYLE[status]}`}>{status}</span>;
+  return <Indicator bar={STATUS_BAR[status]}>{status}</Indicator>;
 }
 
 /** Three-step progress indicator: Reported → In Progress → Resolved. */
@@ -54,8 +57,11 @@ export function StatusStepper({ status }: { status: Status }) {
 export function SectionHeading({ id, eyebrow, title, children }: { id: string; eyebrow: string; title: string; children?: ReactNode }) {
   return (
     <header className="mb-6 max-w-2xl">
-      <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-signal-deep">{eyebrow}</p>
-      <h1 id={id} className="font-display text-4xl font-bold leading-tight">{title}</h1>
+      <p className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-muted">
+        <span aria-hidden="true" className="h-px w-8 bg-signal" />
+        {eyebrow}
+      </p>
+      <h1 id={id} className="text-3xl font-bold tracking-tight md:text-4xl">{title}</h1>
       {children && <p className="mt-3 text-lg text-muted">{children}</p>}
     </header>
   );

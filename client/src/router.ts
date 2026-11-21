@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 
 /** Console pages, in sidebar order. */
 export const CONSOLE_ROUTES = [
-  { id: 'overview', label: 'Overview', icon: '◧' },
-  { id: 'report', label: 'Report an issue', icon: '＋' },
-  { id: 'track', label: 'Live tracker', icon: '☰' },
-  { id: 'admin', label: 'Admin console', icon: '⚑' },
+  { id: 'overview', label: 'Overview' },
+  { id: 'report', label: 'Report an issue' },
+  { id: 'track', label: 'Live tracker' },
+  { id: 'admin', label: 'Admin console' },
 ] as const;
 
 export type ConsoleRoute = (typeof CONSOLE_ROUTES)[number]['id'];

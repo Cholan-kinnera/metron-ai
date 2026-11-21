@@ -74,7 +74,7 @@ export function TrackBoard({ refreshKey, onOpen }: { refreshKey: number; onOpen:
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-xs font-bold tracking-widest text-muted">{issue.id}</p>
+                    <p className="font-mono text-xs text-muted">{issue.id}</p>
                     <h3 className="text-lg font-bold leading-snug group-hover:underline">{issue.title}</h3>
                   </div>
                   <PriorityBadge priority={issue.priority} />

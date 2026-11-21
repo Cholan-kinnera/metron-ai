@@ -31,8 +31,8 @@ export function IssueDialog({ id, onClose }: { id?: string; onClose: () => void 
       <div className="max-h-[85vh] overflow-y-auto p-6 sm:p-8" data-lenis-prevent>
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-muted">{id}</p>
-            <h2 id="issue-dialog-title" className="font-display text-2xl font-bold">
+            <p className="font-mono text-xs text-muted">{id}</p>
+            <h2 id="issue-dialog-title" className="text-2xl font-bold tracking-tight">
               {issue?.title ?? (error ? 'Unavailable' : 'Loading…')}
             </h2>
           </div>
@@ -43,10 +43,10 @@ export function IssueDialog({ id, onClose }: { id?: string; onClose: () => void 
         {error && <p role="alert" className="text-red-700">{error}</p>}
         {issue && (
           <div className="space-y-6">
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
               <StatusBadge status={issue.status} />
               <PriorityBadge priority={issue.priority} />
-              <span className="rounded-full border border-line px-2.5 py-0.5 text-xs font-semibold">{issue.category}</span>
+              <span className="text-sm text-muted">{issue.category}</span>
             </div>
             <StatusStepper status={issue.status} />
             <p className="whitespace-pre-line text-ink-soft">{issue.description}</p>

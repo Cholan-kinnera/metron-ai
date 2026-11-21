@@ -171,7 +171,7 @@ export function ReportForm({ onCreated }: { onCreated: (issue: Issue) => void })
             <article className="card h-full overflow-hidden" aria-label="AI triage result">
               <div className="result-item bg-ink p-6 text-white">
                 <p className="text-xs uppercase tracking-widest text-white/60">Ticket created</p>
-                <p className="font-display text-3xl font-bold">{result.id}</p>
+                <p className="font-mono text-2xl font-medium">{result.id}</p>
                 <p className="mt-1 text-sm text-white/70">Save this ID to track progress.</p>
               </div>
               <dl className="space-y-4 p-6">
@@ -206,7 +206,7 @@ export function ReportForm({ onCreated }: { onCreated: (issue: Issue) => void })
             </article>
           ) : (
             <div className="card flex h-full min-h-72 flex-col justify-center gap-4 border-dashed p-8">
-              <p className="font-display text-2xl font-bold">How triage works</p>
+              <p className="text-xl font-bold tracking-tight">How triage works</p>
               <ol className="space-y-3 text-sm text-ink-soft">
                 {[
                   'Gemini reads your words and photo together.',
@@ -215,7 +215,7 @@ export function ReportForm({ onCreated }: { onCreated: (issue: Issue) => void })
                   'You track every status change publicly, with a timeline.',
                 ].map((step, i) => (
                   <li key={step} className="flex gap-3">
-                    <span className="grid size-6 shrink-0 place-items-center rounded-full bg-signal text-xs font-bold text-ink">{i + 1}</span>
+                    <span className="w-6 shrink-0 font-mono text-xs font-medium text-signal-deep">0{i + 1}</span>
                     {step}
                   </li>
                 ))}

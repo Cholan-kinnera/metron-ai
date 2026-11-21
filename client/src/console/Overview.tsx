@@ -9,8 +9,8 @@ const STATUS_FILL = { Reported: '#8a93a8', 'In Progress': '#fca311', Resolved: '
 function Kpi({ label, value, hint, tone = '' }: { label: string; value: string | number; hint: string; tone?: string }) {
   return (
     <div className={`card p-5 ${tone}`}>
-      <dt className="text-xs font-bold uppercase tracking-widest text-muted">{label}</dt>
-      <dd className="mt-1 font-display text-4xl font-bold tabular-nums">{value}</dd>
+      <dt className="text-xs font-semibold uppercase tracking-wider text-muted">{label}</dt>
+      <dd className="mt-2 text-3xl font-bold tracking-tight tabular-nums">{value}</dd>
       <dd className="mt-1 text-xs text-muted">{hint}</dd>
     </div>
   );
@@ -57,15 +57,18 @@ export function Overview({ stats, refreshKey }: { stats?: Stats; refreshKey: num
   return (
     <div className="space-y-6">
       <header>
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-signal-deep">City overview</p>
-        <h1 className="font-display text-4xl font-bold">Resolution at a glance</h1>
+        <p className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-muted">
+          <span aria-hidden="true" className="h-px w-8 bg-signal" />
+          City overview
+        </p>
+        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Resolution at a glance</h1>
       </header>
 
       <dl className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
         <Kpi label="Total reports" value={stats?.total ?? '…'} hint="All time" />
         <Kpi label="Open" value={stats?.open ?? '…'} hint="Reported + in progress" />
-        <Kpi label="Critical open" value={stats?.criticalOpen ?? '…'} hint="Risk to life" tone={stats?.criticalOpen ? 'border-red-300 bg-red-50' : ''} />
-        <Kpi label="SLA breached" value={stats?.overdue ?? '…'} hint="Open past target" tone={stats?.overdue ? 'border-amber-300 bg-amber-50' : ''} />
+        <Kpi label="Critical open" value={stats?.criticalOpen ?? '…'} hint="Risk to life" tone={stats?.criticalOpen ? 'shadow-[inset_3px_0_0_#dc2626]' : ''} />
+        <Kpi label="SLA breached" value={stats?.overdue ?? '…'} hint="Open past target" tone={stats?.overdue ? 'shadow-[inset_3px_0_0_#f59e0b]' : ''} />
         <Kpi label="Resolution rate" value={stats ? `${stats.resolutionRate}%` : '…'} hint="Resolved / total" />
         <Kpi label="Median fix time" value={stats?.medianResolutionHours != null ? `${stats.medianResolutionHours}h` : '—'} hint="Report → resolved" />
       </dl>
@@ -97,7 +100,7 @@ export function Overview({ stats, refreshKey }: { stats?: Stats; refreshKey: num
       <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
         <section className="card p-5" aria-labelledby="attention-h">
           <div className="mb-4 flex items-center justify-between">
-            <h2 id="attention-h" className="text-sm font-bold">Needs attention · closest to SLA</h2>
+            <h2 id="attention-h" className="text-sm font-bold">Needs attention</h2>
             <a href={hrefFor('track')} className="text-sm font-semibold underline">View all</a>
           </div>
           <ul className="divide-y divide-line">
@@ -105,7 +108,7 @@ export function Overview({ stats, refreshKey }: { stats?: Stats; refreshKey: num
               <li key={issue.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
                 <div className="min-w-0">
                   <p className="truncate font-semibold">{issue.title}</p>
-                  <p className="text-xs text-muted">{issue.id} · {issue.department}</p>
+                  <p className="text-xs text-muted"><span className="font-mono">{issue.id}</span> · {issue.department}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <PriorityBadge priority={issue.priority} />
@@ -113,7 +116,7 @@ export function Overview({ stats, refreshKey }: { stats?: Stats; refreshKey: num
                 </div>
               </li>
             ))}
-            {attention.length === 0 && <li className="py-6 text-center text-muted">Nothing open. 🎉</li>}
+            {attention.length === 0 && <li className="py-6 text-center text-muted">No open issues.</li>}
           </ul>
         </section>
 
@@ -144,9 +147,9 @@ export function Overview({ stats, refreshKey }: { stats?: Stats; refreshKey: num
 
       <section className="card p-5" aria-labelledby="recent-h">
         <h2 id="recent-h" className="mb-3 text-sm font-bold">Recent activity</h2>
-        <ul className="grid gap-2 md:grid-cols-2">
+        <ul className="grid gap-x-8 md:grid-cols-2">
           {[...issues].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 6).map((i) => (
-            <li key={i.id} className="flex items-center justify-between gap-3 rounded-xl bg-paper px-3 py-2 text-sm">
+            <li key={i.id} className="flex items-center justify-between gap-3 border-b border-line py-2.5 text-sm">
               <span className="truncate">{i.title}</span>
               <StatusBadge status={i.status} />
             </li>
