@@ -47,7 +47,7 @@ React 19 + Vite + Tailwind v4 + GSAP/Lenis  ──►  Express 5 API  ──► 
 ## Security
 Helmet (strict CSP, no `x-powered-by`), per-IP rate limits (stricter on submissions), 3 MB body limit, Zod validation on
 every input (including image MIME/size via data-URL checks), constant-time admin-key comparison, secrets only via env vars,
-and the server refuses to start in production without a strong `ADMIN_KEY`. See [SECURITY.md](SECURITY.md).
+and in production a missing or weak `ADMIN_KEY` locks every admin endpoint (fail closed). See [SECURITY.md](SECURITY.md).
 
 ## Accessibility
 Skip link, landmarks, labelled form controls, `aria-live` results and errors, native `<dialog>` with focus management,

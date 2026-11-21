@@ -123,6 +123,14 @@ describe('admin', () => {
   });
 });
 
+describe('admin lockout', () => {
+  it('rejects every admin request when no admin key is configured', async () => {
+    const locked = createApp({ store: new IssueStore(), adminKey: '' });
+    await request(locked).get('/api/admin/verify').expect(401);
+    await request(locked).get('/api/admin/verify').set('x-admin-key', '').expect(401);
+  });
+});
+
 describe('security headers', () => {
   it('sets a CSP and hides the framework', async () => {
     const res = await request(app).get('/api/health').expect(200);

@@ -47,7 +47,7 @@ export function createApp({ store, adminKey, clientDir }: AppOptions) {
 
   const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
     const key = req.get('x-admin-key') ?? '';
-    if (!safeEqual(key, adminKey)) return void res.status(401).json({ error: 'Admin key required' });
+    if (!adminKey || !safeEqual(key, adminKey)) return void res.status(401).json({ error: 'Admin key required' });
     next();
   };
 
