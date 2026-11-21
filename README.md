@@ -21,14 +21,14 @@ Progress → Resolved**, and administrators manage the queue from a dashboard.
 ## Google services used
 - **Google Gemini API** (`@google/genai`) — classification, prioritisation, routing, summary and reasoning, with image understanding.
 - **Google Maps** — embedded map and deep links for every reported location.
-- **Google Fonts** — Fraunces + Manrope.
+- **Google Fonts** — Public Sans + IBM Plex Mono.
 - Built with **Google Antigravity**; deployable to **Cloud Run** via the included `Dockerfile`.
 
 ## Beyond the brief
 - **SLA tracking** per priority (Critical 24h → Low 14d) with breach detection (`server/domain.ts`).
 - **Hazard safety floor** — Gemini may raise urgency but never downgrade a detected life-safety hazard (`applySafetyFloor`).
 - **Analytics** — resolution rate, median fix time, per-department workload (`server/analytics.ts`).
-- **Landing page** with GSAP ScrollTrigger storytelling, Lenis smooth scroll and glassmorphism UI.
+- **Landing page** with GSAP ScrollTrigger storytelling, Lenis smooth scroll and glassmorphism UI on a dark, editorial design with real civic photography.
 
 ## Architecture
 ```
@@ -76,3 +76,13 @@ npm run build && npm start   # http://localhost:8080
 - **Cloud Run:** `gcloud run deploy metron-ai --source . --set-env-vars GEMINI_API_KEY=...,ADMIN_KEY=...`
 
 Data persists to `data/issues.json` (seeded with demo complaints). For multi-instance deployments, swap `IssueStore` for Firestore.
+
+## Photography credits
+Photos from Wikimedia Commons, resized and converted to WebP:
+
+- [Long exposure of Durgam cheruvu road in Hyderabad.jpg](https://commons.wikimedia.org/wiki/File:Long_exposure_of_Durgam_cheruvu_road_in_Hyderabad.jpg) — iMahesh, CC BY-SA 4.0
+- [Driving through potholes.jpg](https://commons.wikimedia.org/wiki/File:Driving_through_potholes.jpg) — KEmel49, CC BY-SA 4.0
+- [Roads deformed T munnekollala Bengaluru.jpg](https://commons.wikimedia.org/wiki/File:Roads_deformed_T_munnekollala_Bengaluru.jpg) — Gangaasoonu, CC BY-SA 4.0
+- [Ripon Building panorama.jpg](https://commons.wikimedia.org/wiki/File:Ripon_Building_panorama.jpg) — PlaneMad, CC BY-SA 2.5
+- [Bhubaneswar at night.JPG](https://commons.wikimedia.org/wiki/File:Bhubaneswar_at_night.JPG) — Adityakay, CC BY-SA 4.0
+- [India - Sights & Culture - Common garbage dump outside a temple (2566331277).jpg](https://commons.wikimedia.org/wiki/File:India_-_Sights_%26_Culture_-_Common_garbage_dump_outside_a_temple_(2566331277).jpg) — McKay Savage from London, UK, CC BY 2.0
