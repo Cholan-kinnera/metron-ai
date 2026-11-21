@@ -10,7 +10,11 @@ vi.mock('@google/genai', () => ({
 const { analyzeIssue } = await import('./gemini.js');
 const { classifyByRules } = await import('./classifier.js');
 
-const input = { title: 'Streetlight sparking', description: 'Live wire hanging from a sparking streetlight pole.', address: 'RS Puram' };
+const input = {
+  title: 'Streetlight sparking',
+  description: 'Live wire hanging from a sparking streetlight pole.',
+  address: 'RS Puram',
+};
 
 afterEach(() => {
   generateContent.mockReset();
@@ -31,7 +35,10 @@ describe('classifyByRules', () => {
   });
 
   it('keeps the citizen hint when nothing matches', () => {
-    expect(classifyByRules('something odd', 'Parks & Public Spaces')).toMatchObject({ category: 'Parks & Public Spaces', priority: 'Low' });
+    expect(classifyByRules('something odd', 'Parks & Public Spaces')).toMatchObject({
+      category: 'Parks & Public Spaces',
+      priority: 'Low',
+    });
   });
 });
 
@@ -54,7 +61,12 @@ describe('analyzeIssue', () => {
       }),
     });
     const result = await analyzeIssue({ ...input, image: 'data:image/jpeg;base64,AAAA' });
-    expect(result).toMatchObject({ source: 'gemini', model: 'gemini-3.5-flash-lite', department: 'Electricity Board', confidence: 0.95 });
+    expect(result).toMatchObject({
+      source: 'gemini',
+      model: 'gemini-3.5-flash-lite',
+      department: 'Electricity Board',
+      confidence: 0.95,
+    });
     const call = generateContent.mock.calls[0][0];
     expect(call.config.responseMimeType).toBe('application/json');
     expect(call.contents[0].parts[1].inlineData).toEqual({ mimeType: 'image/jpeg', data: 'AAAA' });
@@ -64,9 +76,19 @@ describe('analyzeIssue', () => {
     process.env.GEMINI_API_KEY = 'test';
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     generateContent.mockRejectedValueOnce(new Error('503 high demand')).mockResolvedValueOnce({
-      text: JSON.stringify({ category: 'Public Safety', priority: 'High', department: 'Police & Public Safety', summary: 's', reasoning: 'r', confidence: 0.7 }),
+      text: JSON.stringify({
+        category: 'Public Safety',
+        priority: 'High',
+        department: 'Police & Public Safety',
+        summary: 's',
+        reasoning: 'r',
+        confidence: 0.7,
+      }),
     });
-    const result = await analyzeIssue({ ...input, description: 'Crowd blocking the road near the bus stand.' });
+    const result = await analyzeIssue({
+      ...input,
+      description: 'Crowd blocking the road near the bus stand.',
+    });
     expect(generateContent).toHaveBeenCalledTimes(2);
     expect(result).toMatchObject({ source: 'gemini', model: 'gemini-3.1-flash-lite' });
   });

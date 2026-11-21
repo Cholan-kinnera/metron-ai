@@ -5,6 +5,7 @@ import { api, timeAgo, type IssueSummary } from '../api';
 import { gsap, prefersReducedMotion } from '../motion';
 import { PriorityBadge, SectionHeading, StatusStepper } from './ui';
 
+/** Public tracker: searchable, filterable list of issues sorted by urgency. */
 export function TrackBoard({ refreshKey, onOpen }: { refreshKey: number; onOpen: (id: string) => void }) {
   const ids = useId();
   const listRef = useRef<HTMLUListElement>(null);
@@ -17,9 +18,10 @@ export function TrackBoard({ refreshKey, onOpen }: { refreshKey: number; onOpen:
 
   useEffect(() => {
     let active = true;
-    api
-      .list({ status: status || undefined, category: category || undefined, q: q || undefined })
-      .then((rows) => active && setIssues(rows), (e: Error) => active && setError(e.message));
+    api.list({ status: status || undefined, category: category || undefined, q: q || undefined }).then(
+      (rows) => active && setIssues(rows),
+      (e: Error) => active && setError(e.message),
+    );
     return () => {
       active = false;
     };
@@ -42,17 +44,40 @@ export function TrackBoard({ refreshKey, onOpen }: { refreshKey: number; onOpen:
         </SectionHeading>
 
         <div className="mb-6 grid gap-3 sm:grid-cols-[2fr_1fr_1fr]" role="search">
-          <label className="sr-only" htmlFor={`${ids}-q`}>Search issues</label>
-          <input id={`${ids}-q`} type="search" className="field" placeholder="Search CR-1234, street, title…" value={search} onChange={(e) => setSearch(e.target.value)} />
-          <label className="sr-only" htmlFor={`${ids}-s`}>Filter by status</label>
-          <select id={`${ids}-s`} className="field" value={status} onChange={(e) => setStatus(e.target.value as Status | '')}>
+          <label className="sr-only" htmlFor={`${ids}-q`}>
+            Search issues
+          </label>
+          <input
+            id={`${ids}-q`}
+            type="search"
+            className="field"
+            placeholder="Search CR-1234, street, title…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <label className="sr-only" htmlFor={`${ids}-s`}>
+            Filter by status
+          </label>
+          <select
+            id={`${ids}-s`}
+            className="field"
+            value={status}
+            onChange={(e) => setStatus(e.target.value as Status | '')}
+          >
             <option value="">All statuses</option>
             {STATUSES.map((s) => (
               <option key={s}>{s}</option>
             ))}
           </select>
-          <label className="sr-only" htmlFor={`${ids}-c`}>Filter by category</label>
-          <select id={`${ids}-c`} className="field" value={category} onChange={(e) => setCategory(e.target.value as Category | '')}>
+          <label className="sr-only" htmlFor={`${ids}-c`}>
+            Filter by category
+          </label>
+          <select
+            id={`${ids}-c`}
+            className="field"
+            value={category}
+            onChange={(e) => setCategory(e.target.value as Category | '')}
+          >
             <option value="">All categories</option>
             {CATEGORIES.map((c) => (
               <option key={c}>{c}</option>
@@ -60,7 +85,11 @@ export function TrackBoard({ refreshKey, onOpen }: { refreshKey: number; onOpen:
           </select>
         </div>
 
-        {error && <p role="alert" className="text-red-400">{error}</p>}
+        {error && (
+          <p role="alert" className="text-red-400">
+            {error}
+          </p>
+        )}
         <p className="sr-only" aria-live="polite">
           {issues ? `${issues.length} issues shown` : 'Loading issues'}
         </p>
@@ -92,7 +121,9 @@ export function TrackBoard({ refreshKey, onOpen }: { refreshKey: number; onOpen:
             </li>
           ))}
         </ul>
-        {issues?.length === 0 && <p className="card p-8 text-center text-muted">No issues match these filters.</p>}
+        {issues?.length === 0 && (
+          <p className="card p-8 text-center text-muted">No issues match these filters.</p>
+        )}
       </div>
     </section>
   );

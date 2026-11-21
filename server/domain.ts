@@ -29,7 +29,6 @@ export type Priority = (typeof PRIORITIES)[number];
 export type Status = (typeof STATUSES)[number];
 export type Department = (typeof DEPARTMENTS)[number];
 
-
 /** Service-level target (hours to resolve) for each priority. */
 export const SLA_HOURS: Record<Priority, number> = { Critical: 24, High: 72, Medium: 168, Low: 336 };
 
@@ -43,11 +42,17 @@ const HOUR_MS = 3_600_000;
  * @param nowMs - Current time in epoch ms (injected to keep this pure and testable).
  */
 export function slaState(
-  issue: { priority: Priority; status: Status; createdAt: string; timeline: { status: Status; at: string }[] },
+  issue: {
+    priority: Priority;
+    status: Status;
+    createdAt: string;
+    timeline: { status: Status; at: string }[];
+  },
   nowMs: number,
 ): { dueAt: string; hoursLeft: number; breached: boolean; label: string } {
   const dueMs = Date.parse(issue.createdAt) + SLA_HOURS[issue.priority] * HOUR_MS;
-  const resolvedAt = issue.status === 'Resolved' ? issue.timeline.findLast((t) => t.status === 'Resolved')?.at : undefined;
+  const resolvedAt =
+    issue.status === 'Resolved' ? issue.timeline.findLast((t) => t.status === 'Resolved')?.at : undefined;
   const referenceMs = resolvedAt ? Date.parse(resolvedAt) : nowMs;
   const hoursLeft = Math.round((dueMs - referenceMs) / HOUR_MS);
   const breached = referenceMs > dueMs;

@@ -36,11 +36,20 @@ export function IssueDialog({ id, onClose }: { id?: string; onClose: () => void 
               {issue?.title ?? (error ? 'Unavailable' : 'Loading…')}
             </h2>
           </div>
-          <button type="button" className="btn-ghost size-10 p-0" onClick={() => ref.current?.close()} aria-label="Close details">
+          <button
+            type="button"
+            className="btn-ghost size-10 p-0"
+            onClick={() => ref.current?.close()}
+            aria-label="Close details"
+          >
             ✕
           </button>
         </div>
-        {error && <p role="alert" className="text-red-400">{error}</p>}
+        {error && (
+          <p role="alert" className="text-red-400">
+            {error}
+          </p>
+        )}
         {issue && (
           <div className="space-y-6">
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
@@ -50,7 +59,13 @@ export function IssueDialog({ id, onClose }: { id?: string; onClose: () => void 
             </div>
             <StatusStepper status={issue.status} />
             <p className="whitespace-pre-line text-ink-soft">{issue.description}</p>
-            {issue.image && <img src={issue.image} alt={`Photo submitted for: ${issue.title}`} className="max-h-80 w-full rounded-xl object-cover" />}
+            {issue.image && (
+              <img
+                src={issue.image}
+                alt={`Photo submitted for: ${issue.title}`}
+                className="max-h-80 w-full rounded-xl object-cover"
+              />
+            )}
             <div className="rounded-xl bg-paper p-4 text-sm">
               <p>
                 <strong>Department:</strong> {issue.department}
@@ -59,14 +74,20 @@ export function IssueDialog({ id, onClose }: { id?: string; onClose: () => void 
                 <strong>AI summary:</strong> {issue.analysis.summary}
               </p>
               <p className="mt-1 text-muted">
-                {issue.analysis.reasoning} ({issue.analysis.source === 'gemini' ? 'Google Gemini' : 'rule engine'},{' '}
+                {issue.analysis.reasoning} (
+                {issue.analysis.source === 'gemini' ? 'Google Gemini' : 'rule engine'},{' '}
                 {Math.round(issue.analysis.confidence * 100)}% confidence)
               </p>
             </div>
             <div>
               <p className="mb-2 text-sm">
                 <strong>Location:</strong> {issue.location.address} ·{' '}
-                <a className="font-semibold underline" href={mapsUrl(issue.location)} target="_blank" rel="noreferrer">
+                <a
+                  className="font-semibold underline"
+                  href={mapsUrl(issue.location)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   Open in Google Maps
                 </a>
               </p>
@@ -85,7 +106,10 @@ export function IssueDialog({ id, onClose }: { id?: string; onClose: () => void 
               <ol className="relative space-y-4 border-l-2 border-line pl-5">
                 {issue.timeline.map((t, i) => (
                   <li key={i} className="relative">
-                    <span aria-hidden="true" className="absolute -left-[27px] top-1 size-3 rounded-full border-2 border-card bg-signal" />
+                    <span
+                      aria-hidden="true"
+                      className="absolute -left-[27px] top-1 size-3 rounded-full border-2 border-card bg-signal"
+                    />
                     <p className="font-semibold">{t.status}</p>
                     <p className="text-xs text-muted">
                       <time dateTime={t.at}>{new Date(t.at).toLocaleString()}</time>

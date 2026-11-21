@@ -34,7 +34,10 @@ describe('POST /api/issues', () => {
   });
 
   it('rejects invalid input with field-level errors', async () => {
-    const res = await request(app).post('/api/issues').send({ title: 'x', description: '', location: {} }).expect(400);
+    const res = await request(app)
+      .post('/api/issues')
+      .send({ title: 'x', description: '', location: {} })
+      .expect(400);
     expect(res.body.details.map((d: { path: string }) => d.path)).toEqual(
       expect.arrayContaining(['title', 'description', 'location.address']),
     );
@@ -49,7 +52,10 @@ describe('POST /api/issues', () => {
 
   it('accepts a small PNG photo and hides it from list responses', async () => {
     const image = 'data:image/png;base64,iVBORw0KGgo=';
-    const created = await request(app).post('/api/issues').send({ ...validIssue, image }).expect(201);
+    const created = await request(app)
+      .post('/api/issues')
+      .send({ ...validIssue, image })
+      .expect(201);
     const list = await request(app).get('/api/issues').expect(200);
     expect(list.body[0].image).toBeUndefined();
     expect(list.body[0].hasImage).toBe(true);
@@ -64,7 +70,13 @@ describe('POST /api/issues', () => {
 
 describe('tracking', () => {
   it('lists issues sorted by priority and filters by status and search', async () => {
-    await request(app).post('/api/issues').send({ ...validIssue, title: 'Strange noise every evening', description: 'A strange humming noise is heard near the corner every evening.' });
+    await request(app)
+      .post('/api/issues')
+      .send({
+        ...validIssue,
+        title: 'Strange noise every evening',
+        description: 'A strange humming noise is heard near the corner every evening.',
+      });
     await request(app).post('/api/issues').send(validIssue);
     const all = await request(app).get('/api/issues').expect(200);
     expect(all.body.map((i: { priority: string }) => i.priority)).toEqual(['Critical', 'Low']);
@@ -83,7 +95,13 @@ describe('tracking', () => {
   it('reports aggregate stats', async () => {
     await request(app).post('/api/issues').send(validIssue);
     const res = await request(app).get('/api/stats').expect(200);
-    expect(res.body).toMatchObject({ total: 1, open: 1, criticalOpen: 1, byStatus: { Reported: 1 }, byPriority: { Critical: 1 } });
+    expect(res.body).toMatchObject({
+      total: 1,
+      open: 1,
+      criticalOpen: 1,
+      byStatus: { Reported: 1 },
+      byPriority: { Critical: 1 },
+    });
   });
 });
 
@@ -91,7 +109,11 @@ describe('admin', () => {
   it('requires the admin key for mutations', async () => {
     const { body } = await request(app).post('/api/issues').send(validIssue);
     await request(app).patch(`/api/issues/${body.id}`).send({ status: 'Resolved' }).expect(401);
-    await request(app).patch(`/api/issues/${body.id}`).set('x-admin-key', 'wrong').send({ status: 'Resolved' }).expect(401);
+    await request(app)
+      .patch(`/api/issues/${body.id}`)
+      .set('x-admin-key', 'wrong')
+      .send({ status: 'Resolved' })
+      .expect(401);
     await request(app).delete(`/api/issues/${body.id}`).expect(401);
     await request(app).get('/api/admin/verify').set('x-admin-key', ADMIN).expect(200);
   });
@@ -110,14 +132,26 @@ describe('admin', () => {
       .send({ status: 'Resolved', department: 'Public Works Department' })
       .expect(200);
     expect(done.body.department).toBe('Public Works Department');
-    expect(done.body.timeline.map((t: { status: string }) => t.status)).toEqual(['Reported', 'In Progress', 'Resolved']);
+    expect(done.body.timeline.map((t: { status: string }) => t.status)).toEqual([
+      'Reported',
+      'In Progress',
+      'Resolved',
+    ]);
   });
 
   it('validates admin updates and deletes issues', async () => {
     const { body } = await request(app).post('/api/issues').send(validIssue);
     await request(app).patch(`/api/issues/${body.id}`).set('x-admin-key', ADMIN).send({}).expect(400);
-    await request(app).patch(`/api/issues/${body.id}`).set('x-admin-key', ADMIN).send({ status: 'Done' }).expect(400);
-    await request(app).patch('/api/issues/CR-NOPE').set('x-admin-key', ADMIN).send({ status: 'Resolved' }).expect(404);
+    await request(app)
+      .patch(`/api/issues/${body.id}`)
+      .set('x-admin-key', ADMIN)
+      .send({ status: 'Done' })
+      .expect(400);
+    await request(app)
+      .patch('/api/issues/CR-NOPE')
+      .set('x-admin-key', ADMIN)
+      .send({ status: 'Resolved' })
+      .expect(404);
     await request(app).delete(`/api/issues/${body.id}`).set('x-admin-key', ADMIN).expect(204);
     await request(app).delete(`/api/issues/${body.id}`).set('x-admin-key', ADMIN).expect(404);
   });

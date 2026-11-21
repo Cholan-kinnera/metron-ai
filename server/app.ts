@@ -47,13 +47,19 @@ export function createApp({ store, adminKey, clientDir }: AppOptions) {
 
   const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
     const key = req.get('x-admin-key') ?? '';
-    if (!adminKey || !safeEqual(key, adminKey)) return void res.status(401).json({ error: 'Admin key required' });
+    if (!adminKey || !safeEqual(key, adminKey))
+      return void res.status(401).json({ error: 'Admin key required' });
     next();
   };
 
   const api = express.Router();
   api.use(rateLimit({ windowMs: 60_000, limit: 120, standardHeaders: 'draft-8', legacyHeaders: false }));
-  const submitLimit = rateLimit({ windowMs: 60_000, limit: 10, standardHeaders: 'draft-8', legacyHeaders: false });
+  const submitLimit = rateLimit({
+    windowMs: 60_000,
+    limit: 10,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+  });
 
   api.get('/health', (_req, res) => {
     res.json({ ok: true, ai: process.env.GEMINI_API_KEY ? 'gemini' : 'rules' });
@@ -90,7 +96,8 @@ export function createApp({ store, adminKey, clientDir }: AppOptions) {
   });
 
   api.delete('/issues/:id', requireAdmin, async (req, res) => {
-    if (!(await store.remove(String(req.params.id)))) return void res.status(404).json({ error: 'Issue not found' });
+    if (!(await store.remove(String(req.params.id))))
+      return void res.status(404).json({ error: 'Issue not found' });
     res.status(204).end();
   });
 
@@ -110,7 +117,10 @@ export function createApp({ store, adminKey, clientDir }: AppOptions) {
 
   app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
     if (error instanceof ZodError) {
-      return void res.status(400).json({ error: 'Validation failed', details: error.issues.map((i) => ({ path: i.path.join('.'), message: i.message })) });
+      return void res.status(400).json({
+        error: 'Validation failed',
+        details: error.issues.map((i) => ({ path: i.path.join('.'), message: i.message })),
+      });
     }
     if (error instanceof SyntaxError || (error as { type?: string }).type === 'entity.too.large') {
       return void res.status(400).json({ error: 'Invalid or oversized request body' });

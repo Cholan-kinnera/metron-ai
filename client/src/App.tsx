@@ -11,6 +11,7 @@ import { Landing } from './landing/Landing';
 import { gsap, initSmoothScroll, prefersReducedMotion } from './motion';
 import { useRoute } from './router';
 
+/** Root component: hash-routed landing page and officials/citizen console. */
 export function App() {
   const route = useRoute();
   const [stats, setStats] = useState<Stats>();
@@ -25,7 +26,10 @@ export function App() {
 
   useEffect(() => {
     api.stats().then(setStats, () => {});
-    api.health().then((h) => setAiMode(h.ai), () => {});
+    api.health().then(
+      (h) => setAiMode(h.ai),
+      () => {},
+    );
     return initSmoothScroll();
   }, []);
 

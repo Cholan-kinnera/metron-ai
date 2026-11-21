@@ -13,11 +13,15 @@ if (isProduction && adminKey.length < 12) {
   adminKey = '';
 }
 
-const store = new IssueStore(process.env.DATA_FILE ?? fileURLToPath(new URL('../data/issues.json', import.meta.url)));
+const store = new IssueStore(
+  process.env.DATA_FILE ?? fileURLToPath(new URL('../data/issues.json', import.meta.url)),
+);
 await store.load();
 await seedDemoData(store);
 
 const clientDir = fileURLToPath(new URL('../dist', import.meta.url));
 createApp({ store, adminKey, clientDir }).listen(port, () => {
-  console.log(`Metron AI listening on http://localhost:${port} (AI: ${process.env.GEMINI_API_KEY ? 'Gemini' : 'rules fallback'})`);
+  console.log(
+    `Metron AI listening on http://localhost:${port} (AI: ${process.env.GEMINI_API_KEY ? 'Gemini' : 'rules fallback'})`,
+  );
 });

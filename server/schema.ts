@@ -1,6 +1,15 @@
 import { z } from 'zod';
 
-import { CATEGORIES, DEPARTMENTS, PRIORITIES, STATUSES, type Category, type Department, type Priority, type Status } from './domain.js';
+import {
+  CATEGORIES,
+  DEPARTMENTS,
+  PRIORITIES,
+  STATUSES,
+  type Category,
+  type Department,
+  type Priority,
+  type Status,
+} from './domain.js';
 
 export * from './domain.js';
 
@@ -24,7 +33,10 @@ export const createIssueSchema = z.object({
   image: z
     .string()
     .regex(IMAGE_DATA_URL, 'Image must be a PNG, JPEG or WebP data URL')
-    .refine((v) => Math.floor((v.split(',')[1].length * 3) / 4) <= MAX_IMAGE_BYTES, 'Image must be 2 MB or smaller')
+    .refine(
+      (v) => Math.floor((v.split(',')[1].length * 3) / 4) <= MAX_IMAGE_BYTES,
+      'Image must be 2 MB or smaller',
+    )
     .optional(),
 });
 

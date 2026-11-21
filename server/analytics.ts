@@ -60,6 +60,8 @@ export function computeAnalytics(issues: Issue[], nowMs: number = Date.now()): A
       const done = owned.filter((i) => i.status === 'Resolved').length;
       return { department, open: owned.length - done, resolved: done };
     }),
-    aiShare: issues.length ? Math.round((issues.filter((i) => i.analysis.source === 'gemini').length / issues.length) * 100) : 0,
+    aiShare: issues.length
+      ? Math.round((issues.filter((i) => i.analysis.source === 'gemini').length / issues.length) * 100)
+      : 0,
   };
 }

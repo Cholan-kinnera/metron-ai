@@ -24,10 +24,12 @@ function Indicator({ bar, children }: { bar: string; children: ReactNode }) {
   );
 }
 
+/** Priority label with a colour rule; meaning is always conveyed by text. */
 export function PriorityBadge({ priority }: { priority: Priority }) {
   return <Indicator bar={PRIORITY_BAR[priority]}>{priority}</Indicator>;
 }
 
+/** Workflow status label with a colour rule. */
 export function StatusBadge({ status }: { status: Status }) {
   return <Indicator bar={STATUS_BAR[status]}>{status}</Indicator>;
 }
@@ -38,7 +40,11 @@ export function StatusStepper({ status }: { status: Status }) {
   return (
     <ol className="flex items-center gap-2" aria-label={`Progress: ${status}`}>
       {STATUSES.map((step, i) => (
-        <li key={step} className="flex flex-1 items-center gap-2" aria-current={i === current ? 'step' : undefined}>
+        <li
+          key={step}
+          className="flex flex-1 items-center gap-2"
+          aria-current={i === current ? 'step' : undefined}
+        >
           <span
             className={`grid size-6 shrink-0 place-items-center rounded-full text-[11px] font-bold ${
               i <= current ? 'bg-signal text-paper' : 'border border-line bg-card text-muted'
@@ -47,21 +53,36 @@ export function StatusStepper({ status }: { status: Status }) {
             {i < current ? '✓' : i + 1}
           </span>
           <span className={`text-xs ${i <= current ? 'font-semibold text-ink' : 'text-muted'}`}>{step}</span>
-          {i < STATUSES.length - 1 && <span aria-hidden="true" className={`h-px flex-1 ${i < current ? 'bg-signal' : 'bg-line'}`} />}
+          {i < STATUSES.length - 1 && (
+            <span aria-hidden="true" className={`h-px flex-1 ${i < current ? 'bg-signal' : 'bg-line'}`} />
+          )}
         </li>
       ))}
     </ol>
   );
 }
 
-export function SectionHeading({ id, eyebrow, title, children }: { id: string; eyebrow: string; title: string; children?: ReactNode }) {
+/** Page heading with an eyebrow label and optional lead paragraph. */
+export function SectionHeading({
+  id,
+  eyebrow,
+  title,
+  children,
+}: {
+  id: string;
+  eyebrow: string;
+  title: string;
+  children?: ReactNode;
+}) {
   return (
     <header className="mb-6 max-w-2xl">
       <p className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-muted">
         <span aria-hidden="true" className="h-px w-8 bg-signal" />
         {eyebrow}
       </p>
-      <h1 id={id} className="text-3xl font-bold tracking-tight md:text-4xl">{title}</h1>
+      <h1 id={id} className="text-3xl font-bold tracking-tight md:text-4xl">
+        {title}
+      </h1>
       {children && <p className="mt-3 text-lg text-muted">{children}</p>}
     </header>
   );

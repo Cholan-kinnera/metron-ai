@@ -16,10 +16,17 @@
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 }
 
-html.lenis, html.lenis body { height: auto; }
-.lenis.lenis-smooth { scroll-behavior: auto !important; }
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
 
-:root { color-scheme: dark; }
+:root {
+  color-scheme: dark;
+}
 
 body {
   @apply bg-paper text-ink font-sans antialiased;
@@ -35,7 +42,9 @@ body {
   backdrop-filter: blur(18px) saturate(140%);
   -webkit-backdrop-filter: blur(18px) saturate(140%);
   border: 1px solid rgb(255 255 255 / 0.07);
-  box-shadow: 0 20px 50px -24px rgb(0 0 0 / 0.6), inset 0 1px 0 rgb(255 255 255 / 0.04);
+  box-shadow:
+    0 20px 50px -24px rgb(0 0 0 / 0.6),
+    inset 0 1px 0 rgb(255 255 255 / 0.04);
 }
 @utility glass-dark {
   background: rgb(19 39 79 / 0.55);
@@ -61,21 +70,37 @@ body {
 @utility btn {
   @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 font-semibold transition disabled:cursor-not-allowed disabled:opacity-60;
 }
-@utility btn-primary { @apply btn rounded-md bg-signal text-paper hover:bg-amber-300; }
-@utility btn-signal { @apply btn bg-signal text-ink shadow-lg shadow-signal/30 hover:bg-[#ffb73f]; }
-@utility btn-ghost { @apply btn border border-line bg-card text-ink hover:border-ink; }
+@utility btn-primary {
+  @apply btn rounded-md bg-signal text-paper hover:bg-amber-300;
+}
+@utility btn-signal {
+  @apply btn bg-signal text-ink shadow-lg shadow-signal/30 hover:bg-[#ffb73f];
+}
+@utility btn-ghost {
+  @apply btn border border-line bg-card text-ink hover:border-ink;
+}
 
-@utility card { @apply glass rounded-2xl; }
+@utility card {
+  @apply glass rounded-2xl;
+}
 
 .grain {
   background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
   background-size: 18px 18px;
 }
 
-dialog::backdrop { background: rgba(20, 33, 61, 0.55); backdrop-filter: blur(3px); }
+dialog::backdrop {
+  background: rgba(20, 33, 61, 0.55);
+  backdrop-filter: blur(3px);
+}
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 .pin-pulse {
@@ -84,6 +109,12 @@ dialog::backdrop { background: rgba(20, 33, 61, 0.55); backdrop-filter: blur(3px
   animation: pin-pulse 2s ease-out infinite;
 }
 @keyframes pin-pulse {
-  from { transform: scale(0.6); opacity: 0.5; }
-  to { transform: scale(2.2); opacity: 0; }
+  from {
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(2.2);
+    opacity: 0;
+  }
 }

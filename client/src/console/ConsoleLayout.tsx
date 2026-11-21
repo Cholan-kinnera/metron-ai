@@ -2,7 +2,15 @@ import type { ReactNode } from 'react';
 import { CONSOLE_ROUTES, hrefFor, type ConsoleRoute } from '../router';
 
 /** Console shell: sidebar navigation on desktop, horizontal tabs on mobile. */
-export function ConsoleLayout({ route, aiMode, children }: { route: ConsoleRoute; aiMode?: 'gemini' | 'rules'; children: ReactNode }) {
+export function ConsoleLayout({
+  route,
+  aiMode,
+  children,
+}: {
+  route: ConsoleRoute;
+  aiMode?: 'gemini' | 'rules';
+  children: ReactNode;
+}) {
   return (
     <div className="min-h-svh lg:grid lg:grid-cols-[16rem_1fr]">
       <aside className="sticky top-0 z-30 border-r border-line bg-[#070b15]/90 text-white backdrop-blur-xl lg:h-svh">
@@ -12,7 +20,10 @@ export function ConsoleLayout({ route, aiMode, children }: { route: ConsoleRoute
             Metron AI
           </a>
           <p className="hidden items-center gap-2 text-xs text-white/60 lg:inline-flex">
-            <span aria-hidden="true" className={`size-2 rounded-full ${aiMode === 'gemini' ? 'bg-emerald-400' : 'bg-signal'}`} />
+            <span
+              aria-hidden="true"
+              className={`size-2 rounded-full ${aiMode === 'gemini' ? 'bg-emerald-400' : 'bg-signal'}`}
+            />
             {aiMode === 'gemini' ? 'Google Gemini connected' : 'Offline triage (rule engine)'}
           </p>
         </div>
@@ -24,16 +35,21 @@ export function ConsoleLayout({ route, aiMode, children }: { route: ConsoleRoute
                   href={hrefFor(r.id)}
                   aria-current={route === r.id ? 'page' : undefined}
                   className={`flex items-center gap-3 whitespace-nowrap rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
-                    route === r.id ? 'bg-white/10 text-white shadow-[inset_3px_0_0_var(--color-signal)]' : 'text-white/65 hover:bg-white/5 hover:text-white'
+                    route === r.id
+                      ? 'bg-white/10 text-white shadow-[inset_3px_0_0_var(--color-signal)]'
+                      : 'text-white/65 hover:bg-white/5 hover:text-white'
                   }`}
                 >
-                                    {r.label}
+                  {r.label}
                 </a>
               </li>
             ))}
           </ul>
         </nav>
-        <a href={hrefFor('home')} className="m-5 hidden text-sm text-white/60 hover:text-white lg:absolute lg:bottom-0 lg:block">
+        <a
+          href={hrefFor('home')}
+          className="m-5 hidden text-sm text-white/60 hover:text-white lg:absolute lg:bottom-0 lg:block"
+        >
           ← Back to site
         </a>
       </aside>

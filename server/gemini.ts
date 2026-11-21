@@ -32,7 +32,14 @@ const RANK = Object.fromEntries(PRIORITIES.map((p, i) => [p, i])) as Record<Prio
  */
 export function applySafetyFloor(ai: Analysis, rules: Analysis): Analysis {
   if (rules.priority !== 'Critical' || RANK[ai.priority] >= RANK.Critical) return ai;
-  return { ...ai, priority: rules.priority, reasoning: `${ai.reasoning} Priority raised to ${rules.priority} by the hazard safety floor.`.slice(0, 500) };
+  return {
+    ...ai,
+    priority: rules.priority,
+    reasoning: `${ai.reasoning} Priority raised to ${rules.priority} by the hazard safety floor.`.slice(
+      0,
+      500,
+    ),
+  };
 }
 
 let client: GoogleGenAI | undefined;

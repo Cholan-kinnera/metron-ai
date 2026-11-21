@@ -4,7 +4,10 @@ import { dirname } from 'node:path';
 import type { Analysis, CreateIssueInput, Issue, ListQuery, UpdateIssueInput } from './schema.js';
 import { PRIORITIES } from './schema.js';
 
-const PRIORITY_RANK = Object.fromEntries(PRIORITIES.map((p, i) => [p, i])) as Record<Issue['priority'], number>;
+const PRIORITY_RANK = Object.fromEntries(PRIORITIES.map((p, i) => [p, i])) as Record<
+  Issue['priority'],
+  number
+>;
 
 /**
  * In-memory issue repository with optional JSON-file persistence.
@@ -82,7 +85,10 @@ export class IssueStore {
           (!query.priority || i.priority === query.priority) &&
           (!q || `${i.id} ${i.title} ${i.location.address}`.toLowerCase().includes(q)),
       )
-      .sort((a, b) => PRIORITY_RANK[b.priority] - PRIORITY_RANK[a.priority] || b.createdAt.localeCompare(a.createdAt));
+      .sort(
+        (a, b) =>
+          PRIORITY_RANK[b.priority] - PRIORITY_RANK[a.priority] || b.createdAt.localeCompare(a.createdAt),
+      );
   }
 
   async update(id: string, patch: UpdateIssueInput): Promise<Issue | undefined> {

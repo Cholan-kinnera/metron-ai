@@ -13,17 +13,57 @@ export const DEPARTMENT_FOR: Record<Category, Department> = {
 };
 
 const KEYWORDS: Record<Exclude<Category, 'Other'>, string[]> = {
-  'Roads & Potholes': ['pothole', 'road', 'crack', 'asphalt', 'speed breaker', 'footpath', 'pavement', 'traffic signal'],
+  'Roads & Potholes': [
+    'pothole',
+    'road',
+    'crack',
+    'asphalt',
+    'speed breaker',
+    'footpath',
+    'pavement',
+    'traffic signal',
+  ],
   'Garbage & Sanitation': ['garbage', 'trash', 'waste', 'dustbin', 'bin', 'litter', 'dump', 'stink', 'smell'],
-  'Streetlights & Electricity': ['streetlight', 'street light', 'lamp', 'electric', 'wire', 'power', 'transformer', 'dark'],
+  'Streetlights & Electricity': [
+    'streetlight',
+    'street light',
+    'lamp',
+    'electric',
+    'wire',
+    'power',
+    'transformer',
+    'dark',
+  ],
   'Water Supply & Leakage': ['water', 'leak', 'pipe', 'tap', 'supply', 'burst'],
   'Drainage & Sewage': ['drain', 'sewage', 'sewer', 'manhole', 'flood', 'clog', 'overflow'],
   'Public Safety': ['unsafe', 'danger', 'accident', 'crime', 'harass', 'stray', 'fire', 'collapse'],
   'Parks & Public Spaces': ['park', 'tree', 'playground', 'bench', 'garden', 'public toilet'],
 };
 
-const CRITICAL = ['live wire', 'electrocut', 'fire', 'collapse', 'accident', 'injur', 'gas leak', 'open manhole', 'sparking'];
-const HIGH = ['urgent', 'danger', 'children', 'school', 'hospital', 'burst', 'flood', 'overflow', 'days', 'week', 'disease'];
+const CRITICAL = [
+  'live wire',
+  'electrocut',
+  'fire',
+  'collapse',
+  'accident',
+  'injur',
+  'gas leak',
+  'open manhole',
+  'sparking',
+];
+const HIGH = [
+  'urgent',
+  'danger',
+  'children',
+  'school',
+  'hospital',
+  'burst',
+  'flood',
+  'overflow',
+  'days',
+  'week',
+  'disease',
+];
 
 /**
  * Deterministic keyword classifier. Used when Gemini is unavailable so the
@@ -53,7 +93,10 @@ export function classifyByRules(text: string, hint?: Category): Analysis {
     priority,
     department: DEPARTMENT_FOR[best],
     summary: text.slice(0, 160),
-    reasoning: bestScore > 0 ? `Matched ${bestScore} keyword(s) for ${best}.` : 'No strong keyword match; routed by reported category.',
+    reasoning:
+      bestScore > 0
+        ? `Matched ${bestScore} keyword(s) for ${best}.`
+        : 'No strong keyword match; routed by reported category.',
     confidence: Math.min(0.4 + bestScore * 0.15, 0.85),
     source: 'rules',
   };

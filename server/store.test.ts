@@ -24,7 +24,10 @@ describe('IssueStore persistence', () => {
 
   it('does not add a timeline entry when nothing changes status', async () => {
     const store = new IssueStore();
-    const issue = await store.create({ title: 'Test', description: 'Test issue', location: { address: 'Here' } }, classifyByRules('test'));
+    const issue = await store.create(
+      { title: 'Test', description: 'Test issue', location: { address: 'Here' } },
+      classifyByRules('test'),
+    );
     await store.update(issue.id, { priority: 'High' });
     expect(store.get(issue.id)?.timeline).toHaveLength(1);
     expect(store.get(issue.id)?.priority).toBe('High');
