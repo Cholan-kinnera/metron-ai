@@ -4,29 +4,29 @@ import { CATEGORIES, DEPARTMENTS } from '../../../server/domain';
 import type { Stats } from '../api';
 import { gsap, prefersReducedMotion, scrollToSection } from '../motion';
 import { hrefFor } from '../router';
-import { Skyline } from './Skyline';
+import credits from './credits.json';
 
-const FEATURES = [
-  { icon: '✎', title: 'Citizen reporting', body: 'Title, description, GPS location, optional category and photo — submitted in under a minute from any phone.' },
-  { icon: '✦', title: 'Gemini classification', body: 'Google Gemini reads the text and the photo together and assigns one of eight civic categories.' },
-  { icon: '▲', title: 'Priority detection', body: 'Urgency is judged by public risk — Critical, High, Medium or Low — with a hazard safety floor.' },
-  { icon: '⇢', title: 'Department routing', body: 'Every ticket lands with the department that owns the fix, from Public Works to the Electricity Board.' },
-  { icon: '◔', title: 'Live tracking', body: 'Reported → In Progress → Resolved, with a public timeline, SLA countdown and Google Maps pin.' },
-  { icon: '⚑', title: 'Admin console', body: 'Review AI triage, override priority, reassign departments and close tickets with audit notes.' },
+const CAPABILITIES = [
+  { title: 'Citizen reporting', body: 'Title, description, GPS location, optional category and photo, submitted from any phone in under a minute.' },
+  { title: 'Gemini classification', body: 'Google Gemini reads the complaint and the photo together and assigns one of eight civic categories.' },
+  { title: 'Priority detection', body: 'Urgency is judged by public risk, from Low to Critical, with a hazard floor the model cannot override.' },
+  { title: 'Department routing', body: 'Each ticket goes straight to the department that owns the fix, with a service-level deadline attached.' },
+  { title: 'Public tracking', body: 'Reported, In Progress, Resolved. Every change is time-stamped and visible to the citizen who filed it.' },
+  { title: 'Administration', body: 'Officials review AI triage, override priority, reassign departments and close tickets with audit notes.' },
 ];
 
 const STORY = [
-  { kicker: 'Step 01 · Citizen', title: 'Report it in under a minute.', body: 'A title, the place, a few words and an optional photo. GPS pins the spot; the photo is compressed in your browser.', card: { label: 'New report', title: 'Live wire hanging near school gate', meta: 'Race Course Rd · photo attached', chips: ['Awaiting triage'] } },
-  { kicker: 'Step 02 · Google Gemini', title: 'Gemini triages it in seconds.', body: 'Category, urgency and the responsible department — decided from the words and the photo together.', card: { label: 'AI triage', title: 'Streetlights & Electricity', meta: 'Routed to Electricity Board · 95% confidence', chips: ['Critical', 'SLA 24h'] } },
-  { kicker: 'Step 03 · Department', title: 'Watch it move to resolved.', body: 'Crews update the ticket at every step. Citizens follow the same timeline the officials see.', card: { label: 'Resolved', title: 'Wire secured, pole repaired', meta: 'Closed in 6h · within SLA', chips: ['Resolved', 'Verified'] } },
+  { step: '01', title: 'A citizen reports it.', body: 'A photo of the pothole, a sentence about it, and the location from GPS. No forms about departments or ward numbers.', label: 'New report', card: 'Deep pothole on Trichy Road, two bikes skidded this week', meta: 'Singanallur, Coimbatore · photo attached' },
+  { step: '02', title: 'Gemini triages it.', body: 'The model reads the words and the photo together, then returns category, urgency and the responsible department as validated JSON.', label: 'AI triage · 2.1s', card: 'Roads & Potholes · High priority', meta: 'Routed to Public Works Department · due in 72h' },
+  { step: '03', title: 'The city resolves it.', body: 'Field teams update the ticket as work progresses. The citizen sees the same timeline the officials do.', label: 'Resolved', card: 'Patch laid and road surface restored', meta: 'Closed in 31h · within service level' },
 ] as const;
 
 const GUARDRAILS = [
-  'Structured output — replies must match a JSON schema generated from the same Zod schema that validates them.',
-  'Safety floor — Gemini can raise urgency but never downgrade an exposed wire, open manhole or collapse.',
-  'Injection-aware — citizen text is passed as data, never as instructions.',
-  'Never stalls — on timeout or invalid output, a deterministic rule engine triages instead.',
-];
+  ['Structured output', 'Replies must match a JSON schema generated from the same Zod schema that validates them on the server.'],
+  ['Hazard floor', 'Gemini can raise urgency but can never downgrade an exposed wire, open manhole or collapse detected by rules.'],
+  ['Injection resistant', 'Complaint text is passed to the model strictly as data, never as instructions.'],
+  ['Always available', 'On timeout or invalid output a deterministic rule engine triages instead, so no report is lost.'],
+] as const;
 
 const RECEIPT = `{
   "category": "Drainage & Sewage",
@@ -37,7 +37,8 @@ const RECEIPT = `{
   "confidence": 0.94
 }`;
 
-const kicker = 'font-display text-lg italic text-signal-deep';
+const eyebrow = 'flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-signal';
+const Rule = () => <span aria-hidden="true" className="h-px w-10 bg-signal" />;
 
 export function Landing({ stats, aiMode }: { stats?: Stats; aiMode?: 'gemini' | 'rules' }) {
   const root = useRef<HTMLDivElement>(null);
@@ -49,25 +50,24 @@ export function Landing({ stats, aiMode }: { stats?: Stats; aiMode?: 'gemini' | 
 
       gsap
         .timeline({ defaults: { ease: 'power3.out' } })
-        .from('.hero-word', { yPercent: 110, opacity: 0, duration: 0.9, stagger: 0.05 })
-        .from('.hero-fade', { y: 24, opacity: 0, duration: 0.7, stagger: 0.1 }, '-=0.5')
-        .from('.hero-tile', { y: 60, opacity: 0, scale: 0.94, duration: 1, stagger: 0.12 }, 0.2)
-        .from('.sky-pin', { y: -80, opacity: 0, duration: 0.8, stagger: 0.1, ease: 'bounce.out' }, 0.9);
+        .from('.hero-bg', { scale: 1.15, duration: 2.2, ease: 'power2.out' })
+        .from('.hero-line', { yPercent: 110, duration: 1, stagger: 0.08 }, 0.2)
+        .from('.hero-fade', { y: 20, opacity: 0, duration: 0.8, stagger: 0.1 }, 0.6);
 
-      const heroScroll = { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true };
-      gsap.to('.tile-a', { yPercent: -18, ease: 'none', scrollTrigger: heroScroll });
-      gsap.to('.tile-b', { yPercent: -40, ease: 'none', scrollTrigger: heroScroll });
-      gsap.to('.tile-c', { yPercent: -28, ease: 'none', scrollTrigger: heroScroll });
-      gsap.to('.blob', { yPercent: 40, ease: 'none', scrollTrigger: heroScroll });
+      gsap.to('.hero-bg', { yPercent: 18, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
+      gsap.to('.hero-copy', { yPercent: -25, opacity: 0.2, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
+      gsap.to('.marquee-track', { xPercent: -50, duration: 60, ease: 'none', repeat: -1 });
 
-      gsap.to('.marquee-track', { xPercent: -50, duration: 40, ease: 'none', repeat: -1 });
+      gsap.utils.toArray<HTMLElement>('.reveal-img').forEach((el) => {
+        gsap.fromTo(el, { clipPath: 'inset(18% 12% 18% 12% round 24px)' }, { clipPath: 'inset(0% 0% 0% 0% round 24px)', ease: 'none', scrollTrigger: { trigger: el, start: 'top 90%', end: 'top 35%', scrub: true } });
+        gsap.fromTo(el.querySelector('img'), { scale: 1.25 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+      });
 
       gsap.utils.toArray<HTMLElement>('.land-reveal').forEach((el) => {
-        gsap.from(el, { y: 50, opacity: 0, duration: 0.9, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 88%', once: true } });
+        gsap.from(el, { y: 40, opacity: 0, duration: 0.9, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 88%', once: true } });
       });
-      gsap.utils.toArray<HTMLElement>('.feature').forEach((el, i) => {
-        gsap.from(el, { y: 60, opacity: 0, rotateX: -12, duration: 0.8, delay: (i % 3) * 0.1, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 90%', once: true } });
-      });
+
+      gsap.fromTo('.gov-img', { yPercent: -12 }, { yPercent: 12, ease: 'none', scrollTrigger: { trigger: '.gov', start: 'top bottom', end: 'bottom top', scrub: true } });
 
       mm.add('(min-width: 1024px)', () => {
         const panels = gsap.utils.toArray<HTMLElement>('.story-panel');
@@ -95,173 +95,184 @@ export function Landing({ stats, aiMode }: { stats?: Stats; aiMode?: 'gemini' | 
           v: Number(el.dataset.count),
           duration: 1.6,
           ease: 'power2.out',
-          scrollTrigger: { trigger: el, start: 'top 92%', once: true },
+          scrollTrigger: { trigger: el, start: 'top 95%', once: true },
           onUpdate: () => void (el.textContent = `${Math.round(counter.v)}${el.dataset.suffix ?? ''}`),
         });
       });
-
     },
     { scope: root, dependencies: [stats], revertOnUpdate: true },
   );
 
+  const figures = [
+    { label: 'Reports filed', value: stats?.total ?? 0 },
+    { label: 'Critical hazards open', value: stats?.criticalOpen ?? 0 },
+    { label: 'Being fixed now', value: stats?.byStatus['In Progress'] ?? 0 },
+    { label: 'Resolution rate', value: stats?.resolutionRate ?? 0, suffix: '%' },
+  ];
   const pipeline = [
-    { label: 'Reported', value: stats?.byStatus.Reported ?? 0, dot: 'bg-slate-400' },
-    { label: 'In progress', value: stats?.byStatus['In Progress'] ?? 0, dot: 'bg-signal' },
-    { label: 'Resolved', value: stats?.byStatus.Resolved ?? 0, dot: 'bg-emerald-500' },
+    { label: 'Reported', value: stats?.byStatus.Reported ?? 0, bar: 'bg-slate-400' },
+    { label: 'In progress', value: stats?.byStatus['In Progress'] ?? 0, bar: 'bg-amber-400' },
+    { label: 'Resolved', value: stats?.byStatus.Resolved ?? 0, bar: 'bg-emerald-400' },
   ];
 
   return (
-    <div ref={root} className="overflow-x-clip">
-      <div className="bg-ink py-2 text-center text-xs font-medium text-white/80">
-        Smart civic grievance platform · AI triage powered by Google Gemini
-      </div>
-      <header className="sticky top-3 z-40 px-4">
-        <nav className="glass mx-auto flex h-16 max-w-6xl items-center justify-between rounded-full px-4 sm:px-6" aria-label="Site">
-          <a href={hrefFor('home')} className="flex items-center gap-2 font-display text-xl font-bold">
-            <img src="/favicon.svg" alt="" className="size-8" />
+    <div ref={root} className="overflow-x-clip bg-[#0a0f1c] text-slate-300">
+      <header className="fixed inset-x-0 top-0 z-40 border-b border-white/5 bg-[#0a0f1c]/70 backdrop-blur-xl">
+        <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8" aria-label="Site">
+          <a href={hrefFor('home')} className="flex items-center gap-2.5 text-lg font-bold tracking-tight text-white">
+            <img src="/favicon.svg" alt="" className="size-7" />
             Metron AI
           </a>
-          <ul className="hidden gap-7 text-sm font-semibold text-ink-soft md:flex">
+          <ul className="hidden gap-8 text-sm font-medium text-slate-400 md:flex">
             {[
-              ['features', 'Features'],
+              ['problem', 'The problem'],
+              ['capabilities', 'Capabilities'],
               ['how', 'How it works'],
-              ['gemini', 'Gemini'],
-              ['pipeline', 'Live pipeline'],
+              ['gemini', 'AI safeguards'],
+              ['government', 'For government'],
             ].map(([id, label]) => (
               <li key={id}>
-                <button type="button" onClick={() => scrollToSection(id)} className="hover:text-ink">{label}</button>
+                <button type="button" onClick={() => scrollToSection(id)} className="transition hover:text-white">{label}</button>
               </li>
             ))}
           </ul>
-          <a href={hrefFor('overview')} className="btn-primary py-2 text-sm">Open console</a>
+          <a href={hrefFor('overview')} className="rounded-md border border-white/15 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/40">
+            Open console
+          </a>
         </nav>
       </header>
 
       <main id="main" tabIndex={-1}>
-        <section className="hero relative" aria-labelledby="hero-title">
-          <div aria-hidden="true" className="blob pointer-events-none absolute -left-32 top-10 size-[30rem] rounded-full bg-blush/50 blur-3xl" />
-          <div aria-hidden="true" className="blob pointer-events-none absolute -right-20 top-40 size-[26rem] rounded-full bg-sky/40 blur-3xl" />
-          <div className="relative mx-auto grid max-w-6xl items-center gap-14 px-4 pb-28 pt-20 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:pt-28">
-            <div>
-              <p className={`hero-fade ${kicker}`}>Connecting citizens to a responsive city</p>
-              <h1 id="hero-title" className="mt-3 font-display text-5xl font-bold uppercase leading-[0.98] tracking-tight sm:text-6xl xl:text-7xl">
-                {'Civic issues, resolved with intelligence.'.split(' ').map((word, i) => (
-                  <span key={i} className="inline-block overflow-hidden pb-1 align-bottom">
-                    <span className={`hero-word inline-block ${word.startsWith('intelligence') ? 'bg-gradient-to-r from-signal-deep to-signal bg-clip-text text-transparent' : ''}`}>{word}&nbsp;</span>
-                  </span>
-                ))}
-              </h1>
-              <p className="hero-fade mt-6 max-w-xl text-lg leading-relaxed text-muted">
-                Metron AI turns a pothole photo or a two-line complaint into a categorised, prioritised ticket — routed to the right department in seconds by
-                Google Gemini, and tracked in the open until it is resolved.
-              </p>
-              <div className="hero-fade mt-9 flex flex-wrap gap-3">
-                <a href={hrefFor('report')} className="btn-signal px-7 py-3.5 text-base">Report an issue →</a>
-                <a href={hrefFor('track')} className="btn-ghost glass px-7 py-3.5 text-base">Track complaints</a>
-              </div>
-              <p className="hero-fade mt-8 inline-flex items-center gap-2 text-sm font-semibold text-ink-soft">
-                <span aria-hidden="true" className={`size-2.5 animate-pulse rounded-full ${aiMode === 'gemini' ? 'bg-emerald-500' : 'bg-signal'}`} />
-                {aiMode === 'gemini' ? 'Gemini is live and triaging' : 'AI triage ready'}
-              </p>
+        <section className="hero relative flex min-h-svh items-end overflow-hidden" aria-labelledby="hero-title">
+          <img src="/images/city-night.webp" alt="" className="hero-bg absolute inset-0 h-full w-full object-cover" fetchPriority="high" />
+          <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[#0a0f1c] via-[#0a0f1c]/75 to-[#0a0f1c]/40" />
+          <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-[#0a0f1c]/90 to-transparent" />
+          <div className="hero-copy relative mx-auto w-full max-w-7xl px-5 pb-16 pt-40 sm:px-8">
+            <p className={`hero-fade ${eyebrow}`}><Rule />Municipal grievance management</p>
+            <h1 id="hero-title" className="mt-6 max-w-4xl text-4xl font-bold leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl">
+              {['Every civic complaint,', 'triaged in seconds,', 'resolved in the open.'].map((line) => (
+                <span key={line} className="block overflow-hidden pb-1">
+                  <span className="hero-line block">{line}</span>
+                </span>
+              ))}
+            </h1>
+            <p className="hero-fade mt-7 max-w-xl text-lg leading-relaxed text-slate-300">
+              Metron AI reads a citizen's photo and description with Google Gemini, decides what it is, how urgent it is and which
+              department owns it, then tracks the fix until it is closed.
+            </p>
+            <div className="hero-fade mt-10 flex flex-wrap gap-4">
+              <a href={hrefFor('report')} className="rounded-md bg-signal px-6 py-3.5 font-semibold text-[#0a0f1c] transition hover:bg-amber-300">
+                Report an issue
+              </a>
+              <a href={hrefFor('overview')} className="rounded-md border border-white/25 px-6 py-3.5 font-semibold text-white transition hover:border-white/60">
+                View city dashboard
+              </a>
             </div>
-
-            <div aria-hidden="true" className="relative grid h-[30rem] grid-cols-2 grid-rows-2 gap-4">
-              <div className="hero-tile tile-a row-span-2 overflow-hidden rounded-[2rem] bg-ink shadow-2xl shadow-ink/30">
-                <div className="h-full"><Skyline /></div>
-              </div>
-              <div className="hero-tile tile-b glass flex flex-col justify-between rounded-[2rem] p-5">
-                <p className="text-xs font-bold uppercase tracking-widest text-muted">Gemini triage</p>
-                <p className="font-display text-xl font-bold leading-tight">Open manhole near bus stop</p>
-                <div className="flex flex-wrap gap-1.5 text-[11px] font-semibold">
-                  <span className="rounded-full bg-red-100 px-2 py-0.5 text-red-800">Critical</span>
-                  <span className="rounded-full bg-ink px-2 py-0.5 text-white">Water Board</span>
+            <dl className="hero-fade mt-20 grid grid-cols-2 border-t border-white/10 md:grid-cols-4">
+              {figures.map((f, i) => (
+                <div key={f.label} className={`py-6 ${i ? 'md:border-l md:border-white/10 md:pl-8' : ''}`}>
+                  <dd className="text-4xl font-bold tracking-tight text-white tabular-nums" data-count={f.value} data-suffix={f.suffix}>
+                    {f.value}
+                    {f.suffix}
+                  </dd>
+                  <dt className="mt-1 text-sm text-slate-400">{f.label}</dt>
                 </div>
-              </div>
-              <div className="hero-tile tile-c glass relative overflow-hidden rounded-[2rem] p-5">
-                <svg viewBox="0 0 200 140" className="absolute inset-0 h-full w-full opacity-60">
-                  <path d="M0 40 H200 M0 95 H200 M55 0 V140 M140 0 V140" stroke="#13274f" strokeOpacity="0.15" strokeWidth="10" />
-                  <path d="M0 120 Q100 60 200 20" stroke="#6aa7ff" strokeWidth="6" fill="none" strokeOpacity="0.5" />
-                </svg>
-                <span className="absolute left-[30%] top-[45%] size-4 rounded-full border-2 border-white bg-red-500 shadow" />
-                <span className="absolute left-[65%] top-[25%] size-4 rounded-full border-2 border-white bg-signal shadow" />
-                <span className="absolute left-[75%] top-[65%] size-4 rounded-full border-2 border-white bg-emerald-500 shadow" />
-                <p className="relative text-xs font-bold uppercase tracking-widest text-muted">Live city map</p>
-              </div>
-            </div>
+              ))}
+            </dl>
+            <p className="hero-fade mt-2 flex items-center gap-2 text-xs text-slate-500">
+              <span aria-hidden="true" className={`size-1.5 rounded-full ${aiMode === 'gemini' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+              {aiMode === 'gemini' ? 'Live data · Google Gemini connected' : 'Live data · offline triage mode'}
+            </p>
           </div>
-
-          <dl className="land-reveal glass relative mx-4 grid max-w-5xl lg:mx-auto grid-cols-2 gap-6 rounded-[2rem] p-8 md:grid-cols-4">
-            {[
-              { label: 'Reports filed', value: stats?.total ?? 0 },
-              { label: 'Critical open', value: stats?.criticalOpen ?? 0 },
-              { label: 'Being fixed now', value: stats?.byStatus['In Progress'] ?? 0 },
-              { label: 'Resolution rate', value: stats?.resolutionRate ?? 0, suffix: '%' },
-            ].map((s) => (
-              <div key={s.label} className="text-center">
-                <dd className="font-display text-5xl font-bold text-ink" data-count={s.value} data-suffix={s.suffix}>{s.value}{s.suffix}</dd>
-                <dt className="mt-1 text-xs font-bold uppercase tracking-widest text-muted">{s.label}</dt>
-              </div>
-            ))}
-          </dl>
         </section>
 
-        <div className="mt-24 overflow-hidden bg-ink py-6 text-white" aria-label="Issue categories handled">
-          <ul className="marquee-track flex w-max gap-10 whitespace-nowrap font-display text-3xl font-bold uppercase">
+        <div className="overflow-hidden border-y border-white/5 py-5" aria-label="Issue categories handled">
+          <ul className="marquee-track flex w-max gap-12 whitespace-nowrap text-sm font-medium uppercase tracking-[0.2em] text-slate-500">
             {[...CATEGORIES, ...CATEGORIES].map((c, i) => (
-              <li key={i} aria-hidden={i >= CATEGORIES.length} className="flex items-center gap-10">
+              <li key={i} aria-hidden={i >= CATEGORIES.length} className="flex items-center gap-12">
                 {c}
-                <span aria-hidden="true" className="text-signal">✦</span>
+                <span aria-hidden="true" className="h-px w-8 bg-white/15" />
               </li>
             ))}
           </ul>
         </div>
 
-        <section id="features" className="features mx-auto max-w-6xl px-4 py-32 sm:px-6" aria-labelledby="features-title">
-          <div className="land-reveal mx-auto max-w-2xl text-center">
-            <p className={kicker}>Everything the challenge asks for</p>
-            <h2 id="features-title" className="mt-2 font-display text-4xl font-bold uppercase md:text-5xl">One platform, end to end</h2>
+        <section id="problem" className="mx-auto max-w-7xl px-5 py-32 sm:px-8" aria-labelledby="problem-title">
+          <div className="grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:gap-20">
+            <div className="land-reveal lg:sticky lg:top-32 lg:self-start">
+              <p className={eyebrow}><Rule />The problem</p>
+              <h2 id="problem-title" className="mt-6 text-4xl font-bold leading-tight tracking-tight text-white md:text-5xl">
+                Small failures, made worse by slow routing.
+              </h2>
+              <p className="mt-6 text-lg leading-relaxed text-slate-400">
+                A pothole, an overflowing bin, a dark street. Each is minor until it is not. Citizens rarely know which department to
+                call, and complaints arrive unstructured, unprioritised and untracked.
+              </p>
+              <p className="mt-4 text-lg leading-relaxed text-slate-400">
+                Metron AI gives every complaint a category, an urgency, an owner and a deadline the moment it is filed.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-5">
+              <figure className="reveal-img col-span-2 overflow-hidden rounded-3xl">
+                <img src="/images/road-damage.webp" alt="A deep, water-filled pothole in a broken asphalt road in Bengaluru" loading="lazy" className="aspect-[16/9] w-full object-cover" />
+              </figure>
+              <figure className="reveal-img overflow-hidden rounded-3xl">
+                <img src="/images/pothole.webp" alt="An auto-rickshaw driving through a pothole-ridden rural road in Kerala" loading="lazy" className="aspect-[4/5] w-full object-cover" />
+              </figure>
+              <figure className="reveal-img overflow-hidden rounded-3xl">
+                <img src="/images/garbage.webp" alt="Uncollected garbage spilling around a roadside bin beside a wall" loading="lazy" className="aspect-[4/5] w-full object-cover" />
+              </figure>
+            </div>
           </div>
-          <ul className="mt-16 grid gap-6 [perspective:1200px] sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map((f) => (
-              <li key={f.title} className="feature glass group rounded-[2rem] p-8 transition-shadow duration-300 hover:shadow-2xl">
-                <span aria-hidden="true" className="grid size-12 place-items-center rounded-2xl bg-ink text-xl text-signal transition group-hover:rotate-6 group-hover:scale-110">{f.icon}</span>
-                <h3 className="mt-6 font-display text-2xl font-bold">{f.title}</h3>
-                <p className="mt-2 leading-relaxed text-muted">{f.body}</p>
-              </li>
-            ))}
-          </ul>
         </section>
 
-        <section id="how" className="story" aria-labelledby="how-title">
-          <div className="mx-auto grid min-h-svh max-w-6xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[auto_1fr_1fr]">
-            <div aria-hidden="true" className="hidden h-72 w-1.5 overflow-hidden rounded-full bg-line lg:block">
-              <div className="story-progress h-full w-full origin-top scale-y-0 bg-gradient-to-b from-signal to-signal-deep" />
+        <section id="capabilities" className="border-t border-white/5 bg-[#0d1424] py-32" aria-labelledby="cap-title">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8">
+            <div className="land-reveal max-w-2xl">
+              <p className={eyebrow}><Rule />Capabilities</p>
+              <h2 id="cap-title" className="mt-6 text-4xl font-bold tracking-tight text-white md:text-5xl">One workflow, from complaint to closure.</h2>
+            </div>
+            <ol className="mt-20 grid gap-x-16 md:grid-cols-2 lg:grid-cols-3">
+              {CAPABILITIES.map((c, i) => (
+                <li key={c.title} className="land-reveal border-t border-white/10 py-10">
+                  <p className="font-mono text-sm text-signal">0{i + 1}</p>
+                  <h3 className="mt-4 text-xl font-semibold text-white">{c.title}</h3>
+                  <p className="mt-3 leading-relaxed text-slate-400">{c.body}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <section id="how" className="story border-t border-white/5" aria-labelledby="how-title">
+          <div className="mx-auto grid min-h-svh max-w-7xl items-center gap-12 px-5 py-24 sm:px-8 lg:grid-cols-[auto_1fr_1fr] lg:gap-16">
+            <div aria-hidden="true" className="hidden h-80 w-px overflow-hidden bg-white/10 lg:block">
+              <div className="story-progress h-full w-full origin-top scale-y-0 bg-signal" />
             </div>
             <div>
-              <p className={kicker}>How it works</p>
-              <h2 id="how-title" className="mb-10 mt-2 font-display text-4xl font-bold uppercase md:text-5xl">From pothole to closed ticket</h2>
-              <ol className="grid gap-8 lg:block">
+              <p className={eyebrow}><Rule />How it works</p>
+              <h2 id="how-title" className="mb-12 mt-6 text-4xl font-bold tracking-tight text-white md:text-5xl">Three steps. No paperwork.</h2>
+              <ol className="grid gap-10 lg:block">
                 {STORY.map((s) => (
-                  <li key={s.title} className="story-panel lg:absolute lg:max-w-md">
-                    <p className="text-sm font-bold uppercase tracking-widest text-signal-deep">{s.kicker}</p>
-                    <h3 className="mt-1 font-display text-3xl font-bold">{s.title}</h3>
-                    <p className="mt-3 text-lg leading-relaxed text-muted">{s.body}</p>
+                  <li key={s.step} className="story-panel lg:absolute lg:max-w-md">
+                    <p className="font-mono text-sm text-signal">{s.step}</p>
+                    <h3 className="mt-2 text-3xl font-semibold text-white">{s.title}</h3>
+                    <p className="mt-4 text-lg leading-relaxed text-slate-400">{s.body}</p>
                   </li>
                 ))}
               </ol>
-              <div aria-hidden="true" className="hidden h-48 lg:block" />
+              <div aria-hidden="true" className="hidden h-52 lg:block" />
             </div>
-            <div aria-hidden="true" className="relative hidden h-80 lg:block">
+            <div aria-hidden="true" className="relative hidden h-72 lg:block">
               {STORY.map((s, i) => (
-                <div key={s.title} className="story-card glass absolute inset-0 rounded-[2rem] p-8">
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted">{s.card.label}</p>
-                  <p className="mt-3 font-display text-3xl font-bold">{s.card.title}</p>
-                  <p className="mt-2 text-muted">{s.card.meta}</p>
-                  <div className="mt-6 flex gap-2">
-                    {s.card.chips.map((c) => <span key={c} className="rounded-full bg-ink px-3 py-1 text-xs font-semibold text-white">{c}</span>)}
-                  </div>
-                  <div className="mt-8 h-2 rounded-full bg-line">
-                    <div className="h-full rounded-full bg-signal" style={{ width: `${((i + 1) / STORY.length) * 100}%` }} />
+                <div key={s.step} className="story-card glass-dark absolute inset-0 rounded-2xl p-8">
+                  <p className="font-mono text-xs uppercase tracking-wider text-slate-400">{s.label}</p>
+                  <p className="mt-5 text-2xl font-semibold leading-snug text-white">{s.card}</p>
+                  <p className="mt-3 text-slate-400">{s.meta}</p>
+                  <div className="mt-10 grid grid-cols-3 gap-2">
+                    {STORY.map((_, j) => (
+                      <span key={j} className={`h-1 rounded-full ${j <= i ? 'bg-signal' : 'bg-white/10'}`} />
+                    ))}
                   </div>
                 </div>
               ))}
@@ -269,79 +280,111 @@ export function Landing({ stats, aiMode }: { stats?: Stats; aiMode?: 'gemini' | 
           </div>
         </section>
 
-        <section id="gemini" className="relative overflow-hidden bg-ink py-32 text-white" aria-labelledby="gemini-title">
-          <div aria-hidden="true" className="pointer-events-none absolute -right-40 -top-40 size-[34rem] rounded-full bg-sky/25 blur-3xl" />
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-40 -left-20 size-[28rem] rounded-full bg-signal/20 blur-3xl" />
-          <div className="relative mx-auto grid max-w-6xl items-center gap-14 px-4 sm:px-6 lg:grid-cols-2">
+        <section id="gemini" className="relative overflow-hidden border-t border-white/5 bg-[#0d1424] py-32" aria-labelledby="gemini-title">
+          <div className="relative mx-auto grid max-w-7xl items-start gap-16 px-5 sm:px-8 lg:grid-cols-2">
             <div className="land-reveal">
-              <p className="font-display text-lg italic text-signal">Google Gemini, with guardrails</p>
-              <h2 id="gemini-title" className="mt-2 font-display text-4xl font-bold uppercase md:text-5xl">The model understands. The rules keep it honest.</h2>
-              <ul className="mt-10 space-y-5">
-                {GUARDRAILS.map((g) => (
-                  <li key={g} className="flex gap-3 text-white/80">
-                    <span aria-hidden="true" className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-signal text-xs font-bold text-ink">✓</span>
-                    {g}
-                  </li>
+              <p className={eyebrow}><Rule />AI safeguards</p>
+              <h2 id="gemini-title" className="mt-6 text-4xl font-bold tracking-tight text-white md:text-5xl">Gemini understands. Rules keep it accountable.</h2>
+              <dl className="mt-12 divide-y divide-white/10 border-y border-white/10">
+                {GUARDRAILS.map(([title, body]) => (
+                  <div key={title} className="grid gap-2 py-6 sm:grid-cols-[11rem_1fr]">
+                    <dt className="font-semibold text-white">{title}</dt>
+                    <dd className="text-slate-400">{body}</dd>
+                  </div>
                 ))}
-              </ul>
+              </dl>
             </div>
-            <figure className="receipt land-reveal glass-dark rounded-[2rem] p-7 font-mono text-sm shadow-2xl">
-              <figcaption className="mb-5 flex items-center justify-between text-xs text-white/60">
-                <span>gemini-2.5-flash · structured output</span>
-                <span className="rounded-full bg-emerald-400/20 px-2.5 py-0.5 text-emerald-300">schema valid</span>
+            <figure className="receipt land-reveal overflow-hidden rounded-2xl border border-white/10 bg-black/40 lg:mt-24">
+              <figcaption className="flex items-center justify-between border-b border-white/10 px-6 py-4 font-mono text-xs text-slate-400">
+                <span>gemini-2.5-flash · response</span>
+                <span className="text-emerald-400">schema valid</span>
               </figcaption>
-              <pre className="whitespace-pre-wrap break-words text-[13px]">
-                {RECEIPT.split('\n').map((line, i) => <span key={i} className="receipt-line block text-white/85">{line}</span>)}
+              <pre className="whitespace-pre-wrap break-words p-6 font-mono text-[13px] leading-relaxed">
+                {RECEIPT.split('\n').map((line, i) => (
+                  <span key={i} className="receipt-line block text-slate-300">{line}</span>
+                ))}
               </pre>
             </figure>
           </div>
         </section>
 
-        <section id="pipeline" className="mx-auto max-w-6xl px-4 py-32 sm:px-6" aria-labelledby="pipeline-title">
-          <div className="land-reveal max-w-2xl">
-            <p className={kicker}>Live pipeline</p>
-            <h2 id="pipeline-title" className="mt-2 font-display text-4xl font-bold uppercase md:text-5xl">Every complaint, in the open</h2>
+        <section id="government" className="gov relative overflow-hidden" aria-labelledby="gov-title">
+          <img src="/images/municipal.webp" alt="" loading="lazy" className="gov-img absolute inset-0 h-[124%] w-full object-cover" />
+          <div aria-hidden="true" className="absolute inset-0 bg-[#0a0f1c]/80" />
+          <div className="relative mx-auto max-w-7xl px-5 py-36 sm:px-8">
+            <div className="land-reveal max-w-2xl">
+              <p className={eyebrow}><Rule />For government</p>
+              <h2 id="gov-title" className="mt-6 text-4xl font-bold tracking-tight text-white md:text-5xl">Built around how a municipal corporation actually works.</h2>
+              <p className="mt-6 text-lg leading-relaxed text-slate-300">
+                Tickets map to real departments with service-level deadlines by priority. Officials get a live overview of workload,
+                breaches and resolution time, and every action leaves an audit trail.
+              </p>
+            </div>
+            <ul className="land-reveal mt-16 grid gap-x-10 border-t border-white/15 sm:grid-cols-2 lg:grid-cols-4">
+              {DEPARTMENTS.map((d) => (
+                <li key={d} className="border-b border-white/10 py-5 text-white">{d}</li>
+              ))}
+            </ul>
           </div>
-          <ol className="mt-14 grid gap-6 md:grid-cols-3">
+        </section>
+
+        <section className="mx-auto max-w-7xl px-5 py-32 sm:px-8" aria-labelledby="pipeline-title">
+          <div className="land-reveal flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className={eyebrow}><Rule />Live pipeline</p>
+              <h2 id="pipeline-title" className="mt-6 text-4xl font-bold tracking-tight text-white md:text-5xl">Where every complaint stands, now.</h2>
+            </div>
+            <a href={hrefFor('track')} className="font-semibold text-white underline decoration-signal underline-offset-8 hover:decoration-2">Open the live tracker</a>
+          </div>
+          <ol className="mt-16 grid border-t border-white/10 md:grid-cols-3">
             {pipeline.map((p, i) => (
-              <li key={p.label} className="land-reveal glass rounded-[2rem] p-8">
-                <p className="flex items-center gap-2 text-sm font-semibold text-muted">
-                  <span aria-hidden="true" className={`size-2.5 rounded-full ${p.dot}`} />0{i + 1} · {p.label}
+              <li key={p.label} className={`land-reveal py-10 ${i ? 'md:border-l md:border-white/10 md:pl-10' : ''}`}>
+                <p className="flex items-center gap-3 text-sm text-slate-400">
+                  <span aria-hidden="true" className={`h-4 w-[3px] rounded-full ${p.bar}`} />
+                  {p.label}
                 </p>
-                <p className="mt-4 font-display text-7xl font-bold" data-count={p.value}>{p.value}</p>
+                <p className="mt-4 text-7xl font-bold tracking-tight text-white tabular-nums" data-count={p.value}>{p.value}</p>
               </li>
             ))}
           </ol>
-          <h3 className="mb-5 mt-20 text-sm font-bold uppercase tracking-widest text-muted">Departments on the network</h3>
-          <ul className="flex flex-wrap gap-3">
-            {DEPARTMENTS.map((d) => <li key={d} className="land-reveal glass rounded-full px-5 py-2.5 text-sm font-medium">{d}</li>)}
-          </ul>
         </section>
 
-        <section className="px-4 pb-24" aria-labelledby="cta-title">
-          <div className="land-reveal relative mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-ink to-ink-soft p-10 text-white md:flex-row md:items-center md:p-16">
-            <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-20 size-80 rounded-full bg-signal/30 blur-3xl" />
-            <h2 id="cta-title" className="relative max-w-2xl font-display text-4xl font-bold uppercase md:text-5xl">Seen something broken on your street?</h2>
-            <a href={hrefFor('report')} className="btn-signal relative px-8 py-4 text-lg">Report it now →</a>
+        <section className="relative overflow-hidden" aria-labelledby="cta-title">
+          <img src="/images/hero.webp" alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+          <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-[#0a0f1c] via-[#0a0f1c]/85 to-[#0a0f1c]/40" />
+          <div className="land-reveal relative mx-auto flex max-w-7xl flex-col items-start gap-8 px-5 py-32 sm:px-8">
+            <h2 id="cta-title" className="max-w-2xl text-4xl font-bold tracking-tight text-white md:text-6xl">Seen something broken on your street?</h2>
+            <a href={hrefFor('report')} className="rounded-md bg-signal px-7 py-4 text-lg font-semibold text-[#0a0f1c] transition hover:bg-amber-300">
+              File a report
+            </a>
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-line bg-white/40 backdrop-blur">
-        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 text-sm sm:px-6 md:grid-cols-3">
+      <footer className="border-t border-white/5">
+        <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 text-sm sm:px-8 md:grid-cols-[1fr_auto_1.4fr]">
           <div>
-            <p className="flex items-center gap-2 font-display text-xl font-bold"><img src="/favicon.svg" alt="" className="size-7" />Metron AI</p>
-            <p className="mt-3 text-muted">AI-powered citizen grievance management and resolution.</p>
+            <p className="flex items-center gap-2.5 text-lg font-bold text-white"><img src="/favicon.svg" alt="" className="size-7" />Metron AI</p>
+            <p className="mt-3 max-w-xs text-slate-500">AI-assisted citizen grievance management. Triage by Google Gemini, maps by Google Maps.</p>
           </div>
           <nav aria-label="Footer">
-            <ul className="space-y-2 text-ink-soft">
-              <li><a href={hrefFor('report')} className="hover:underline">Report an issue</a></li>
-              <li><a href={hrefFor('track')} className="hover:underline">Live tracker</a></li>
-              <li><a href={hrefFor('overview')} className="hover:underline">City overview</a></li>
-              <li><a href={hrefFor('admin')} className="hover:underline">Admin console</a></li>
+            <ul className="space-y-2.5 text-slate-400">
+              <li><a href={hrefFor('report')} className="hover:text-white">Report an issue</a></li>
+              <li><a href={hrefFor('track')} className="hover:text-white">Live tracker</a></li>
+              <li><a href={hrefFor('overview')} className="hover:text-white">City overview</a></li>
+              <li><a href={hrefFor('admin')} className="hover:text-white">Admin console</a></li>
             </ul>
           </nav>
-          <p className="text-muted md:text-right">Powered by Google Gemini · Google Maps<br />Built for PromptWars × GDG on Campus PSG iTech</p>
+          <div className="text-xs leading-relaxed text-slate-500">
+            <p className="mb-2 font-semibold uppercase tracking-wider text-slate-400">Photography</p>
+            <ul className="space-y-1">
+              {credits.map((c) => (
+                <li key={c.file}>
+                  <a href={c.source} target="_blank" rel="noreferrer" className="hover:text-slate-300">{c.title}</a> · {c.author} · {c.license}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </footer>
     </div>
