@@ -40,7 +40,7 @@ export function IssueDialog({ id, onClose }: { id?: string; onClose: () => void 
             ✕
           </button>
         </div>
-        {error && <p role="alert" className="text-red-700">{error}</p>}
+        {error && <p role="alert" className="text-red-400">{error}</p>}
         {issue && (
           <div className="space-y-6">
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2">

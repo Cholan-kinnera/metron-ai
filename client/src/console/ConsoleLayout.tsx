@@ -5,7 +5,7 @@ import { CONSOLE_ROUTES, hrefFor, type ConsoleRoute } from '../router';
 export function ConsoleLayout({ route, aiMode, children }: { route: ConsoleRoute; aiMode?: 'gemini' | 'rules'; children: ReactNode }) {
   return (
     <div className="min-h-svh lg:grid lg:grid-cols-[16rem_1fr]">
-      <aside className="sticky top-0 z-30 bg-ink/90 text-white backdrop-blur-xl lg:h-svh">
+      <aside className="sticky top-0 z-30 border-r border-line bg-[#070b15]/90 text-white backdrop-blur-xl lg:h-svh">
         <div className="flex items-center justify-between gap-4 px-4 py-4 lg:flex-col lg:items-stretch lg:px-5 lg:py-6">
           <a href={hrefFor('home')} className="flex items-center gap-2 text-lg font-bold tracking-tight">
             <img src="/favicon.svg" alt="" className="size-8" />

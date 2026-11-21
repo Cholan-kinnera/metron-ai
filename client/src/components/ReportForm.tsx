@@ -90,7 +90,7 @@ export function ReportForm({ onCreated }: { onCreated: (issue: Issue) => void })
 
   return (
     <section id="report" tabIndex={-1} className="scroll-mt-20" aria-labelledby={`${ids}-h`}>
-      <SectionHeading id={`${ids}-h`} eyebrow="01 — Report" title="Tell us what's broken.">
+      <SectionHeading id={`${ids}-h`} eyebrow="Citizen report" title="Tell us what's broken.">
         Describe it in your own words. Gemini reads the text and the photo, picks the category, judges urgency and routes it to the
         right department.
       </SectionHeading>
@@ -99,25 +99,24 @@ export function ReportForm({ onCreated }: { onCreated: (issue: Issue) => void })
         <form onSubmit={onSubmit} className="card space-y-5 p-6 sm:p-8" aria-describedby={`${ids}-err`}>
           <div>
             <label htmlFor={`${ids}-title`} className="mb-1.5 block text-sm font-semibold">
-              Title <span aria-hidden="true" className="text-red-700">*</span>
+              Title <span aria-hidden="true" className="text-red-400">*</span>
             </label>
             <input id={`${ids}-title`} name="title" className="field" required minLength={5} maxLength={120} placeholder="e.g. Deep pothole outside the bus depot" />
           </div>
           <div>
             <label htmlFor={`${ids}-desc`} className="mb-1.5 block text-sm font-semibold">
-              Description <span aria-hidden="true" className="text-red-700">*</span>
+              Description <span aria-hidden="true" className="text-red-400">*</span>
             </label>
             <textarea id={`${ids}-desc`} name="description" className="field min-h-32" required minLength={10} maxLength={2000} placeholder="What's happening, since when, and who is affected?" />
           </div>
           <div>
             <label htmlFor={`${ids}-loc`} className="mb-1.5 block text-sm font-semibold">
-              Location <span aria-hidden="true" className="text-red-700">*</span>
+              Location <span aria-hidden="true" className="text-red-400">*</span>
             </label>
             <div className="flex gap-2">
               <input id={`${ids}-loc`} className="field" required minLength={3} maxLength={200} value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Street, area, landmark" autoComplete="street-address" />
               <button type="button" className="btn-ghost shrink-0" onClick={locate} disabled={locating} aria-label="Use my current location">
-                <span aria-hidden="true">◎</span>
-                <span className="hidden sm:inline">{locating ? 'Locating…' : 'Use GPS'}</span>
+                <span className="hidden sm:inline">{locating ? 'Locating…' : 'Use my location'}</span>
               </button>
             </div>
             {coords && (
@@ -145,12 +144,12 @@ export function ReportForm({ onCreated }: { onCreated: (issue: Issue) => void })
               <label htmlFor={`${ids}-img`} className="mb-1.5 block text-sm font-semibold">
                 Photo <span className="font-normal text-muted">(optional)</span>
               </label>
-              <input id={`${ids}-img`} type="file" accept="image/png,image/jpeg,image/webp" className="field file:mr-3 file:rounded-full file:border-0 file:bg-ink file:px-3 file:py-1 file:text-white" onChange={(e) => onImage(e.target.files?.[0])} />
+              <input id={`${ids}-img`} type="file" accept="image/png,image/jpeg,image/webp" className="field file:mr-3 file:rounded-full file:border-0 file:bg-signal file:px-3 file:py-1 file:text-paper" onChange={(e) => onImage(e.target.files?.[0])} />
             </div>
           </div>
           {image && <img src={image} alt="Preview of the attached photo" className="max-h-48 rounded-xl border border-line object-cover" />}
 
-          <p id={`${ids}-err`} role="alert" className="text-sm font-medium text-red-700">
+          <p id={`${ids}-err`} role="alert" className="text-sm font-medium text-red-400">
             {error}
           </p>
           <button type="submit" className="btn-primary w-full py-3.5 text-base" disabled={submitting}>
@@ -169,10 +168,10 @@ export function ReportForm({ onCreated }: { onCreated: (issue: Issue) => void })
             </div>
           ) : result ? (
             <article className="card h-full overflow-hidden" aria-label="AI triage result">
-              <div className="result-item bg-ink p-6 text-white">
-                <p className="text-xs uppercase tracking-widest text-white/60">Ticket created</p>
+              <div className="result-item border-b border-line bg-signal/10 p-6">
+                <p className="text-xs uppercase tracking-widest text-muted">Ticket created</p>
                 <p className="font-mono text-2xl font-medium">{result.id}</p>
-                <p className="mt-1 text-sm text-white/70">Save this ID to track progress.</p>
+                <p className="mt-1 text-sm text-muted">Save this ID to track progress.</p>
               </div>
               <dl className="space-y-4 p-6">
                 <div className="result-item">

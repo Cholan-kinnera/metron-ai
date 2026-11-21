@@ -27,7 +27,7 @@ function BarList({ rows, label }: { rows: [string, number][]; label: string }) {
           <li key={name} className="grid grid-cols-[minmax(0,11rem)_1fr_2rem] items-center gap-3 text-sm" title={`${name}: ${count}`}>
             <span className="truncate text-ink-soft">{name}</span>
             <span className="h-3 rounded-full bg-line/60">
-              <span className="block h-full rounded-full bg-ink transition-[width] duration-700" style={{ width: `${(count / max) * 100}%` }} />
+              <span className="block h-full rounded-full bg-sky-400/80 transition-[width] duration-700" style={{ width: `${(count / max) * 100}%` }} />
             </span>
             <span className="text-right font-semibold tabular-nums">{count}</span>
           </li>
@@ -112,7 +112,7 @@ export function Overview({ stats, refreshKey }: { stats?: Stats; refreshKey: num
                 </div>
                 <div className="flex items-center gap-2">
                   <PriorityBadge priority={issue.priority} />
-                  <span className={`text-xs font-bold ${sla.breached ? 'text-red-700' : 'text-ink-soft'}`}>{sla.label}</span>
+                  <span className={`text-xs font-bold ${sla.breached ? 'text-red-400' : 'text-ink-soft'}`}>{sla.label}</span>
                 </div>
               </li>
             ))}

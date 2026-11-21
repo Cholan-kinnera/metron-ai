@@ -41,13 +41,13 @@ export function StatusStepper({ status }: { status: Status }) {
         <li key={step} className="flex flex-1 items-center gap-2" aria-current={i === current ? 'step' : undefined}>
           <span
             className={`grid size-6 shrink-0 place-items-center rounded-full text-[11px] font-bold ${
-              i <= current ? 'bg-ink text-white' : 'border border-line bg-white text-muted'
+              i <= current ? 'bg-signal text-paper' : 'border border-line bg-card text-muted'
             }`}
           >
             {i < current ? '✓' : i + 1}
           </span>
           <span className={`text-xs ${i <= current ? 'font-semibold text-ink' : 'text-muted'}`}>{step}</span>
-          {i < STATUSES.length - 1 && <span aria-hidden="true" className={`h-px flex-1 ${i < current ? 'bg-ink' : 'bg-line'}`} />}
+          {i < STATUSES.length - 1 && <span aria-hidden="true" className={`h-px flex-1 ${i < current ? 'bg-signal' : 'bg-line'}`} />}
         </li>
       ))}
     </ol>

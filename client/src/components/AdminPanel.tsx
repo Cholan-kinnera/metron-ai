@@ -82,7 +82,7 @@ export function AdminPanel({ stats, onChanged, onOpen }: { stats?: Stats; onChan
 
   return (
     <section id="admin" tabIndex={-1} className="scroll-mt-20" aria-labelledby={`${ids}-h`}>
-      <SectionHeading id={`${ids}-h`} eyebrow="03 — Admin" title="Run the queue.">
+      <SectionHeading id={`${ids}-h`} eyebrow="Administration" title="Run the queue.">
         Review AI triage, reassign departments, override urgency and move tickets to resolution.
       </SectionHeading>
 
@@ -115,7 +115,7 @@ export function AdminPanel({ stats, onChanged, onOpen }: { stats?: Stats; onChan
                   <li key={name} className="grid grid-cols-[10rem_1fr_2rem] items-center gap-3 text-sm">
                     <span className="truncate">{name}</span>
                     <span className="h-2.5 rounded-full bg-line">
-                      <span className="block h-full rounded-full bg-ink" style={{ width: `${(count / maxCount) * 100}%` }} />
+                      <span className="block h-full rounded-full bg-sky-400/80" style={{ width: `${(count / maxCount) * 100}%` }} />
                     </span>
                     <span className="text-right font-semibold tabular-nums">{count}</span>
                   </li>
@@ -165,7 +165,7 @@ export function AdminPanel({ stats, onChanged, onOpen }: { stats?: Stats; onChan
                     <td className="p-4 text-right">
                       {confirmDelete === issue.id ? (
                         <span className="inline-flex gap-2">
-                          <button type="button" className="btn bg-red-700 px-3 py-1.5 text-white" onClick={() => remove(issue.id)}>Confirm</button>
+                          <button type="button" className="btn bg-red-600 px-3 py-1.5 text-white" onClick={() => remove(issue.id)}>Confirm</button>
                           <button type="button" className="btn-ghost px-3 py-1.5" onClick={() => setConfirmDelete(undefined)}>Cancel</button>
                         </span>
                       ) : (
@@ -181,7 +181,7 @@ export function AdminPanel({ stats, onChanged, onOpen }: { stats?: Stats; onChan
           </div>
         </div>
       )}
-      {!authed && message && <p role="alert" className="mt-3 text-sm text-red-700">{message}</p>}
+      {!authed && message && <p role="alert" className="mt-3 text-sm text-red-400">{message}</p>}
     </section>
   );
 }

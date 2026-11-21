@@ -37,7 +37,7 @@ export function TrackBoard({ refreshKey, onOpen }: { refreshKey: number; onOpen:
   return (
     <section id="track" tabIndex={-1} className="scroll-mt-20" aria-labelledby={`${ids}-h`}>
       <div>
-        <SectionHeading id={`${ids}-h`} eyebrow="02 — Track" title="Every complaint, in the open.">
+        <SectionHeading id={`${ids}-h`} eyebrow="Live tracker" title="Every complaint, in the open.">
           Search by ticket ID, street or keyword. Urgent issues float to the top.
         </SectionHeading>
 
@@ -60,7 +60,7 @@ export function TrackBoard({ refreshKey, onOpen }: { refreshKey: number; onOpen:
           </select>
         </div>
 
-        {error && <p role="alert" className="text-red-700">{error}</p>}
+        {error && <p role="alert" className="text-red-400">{error}</p>}
         <p className="sr-only" aria-live="polite">
           {issues ? `${issues.length} issues shown` : 'Loading issues'}
         </p>
