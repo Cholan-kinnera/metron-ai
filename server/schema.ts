@@ -57,7 +57,7 @@ export const analysisSchema = z.object({
 export type CreateIssueInput = z.infer<typeof createIssueSchema>;
 export type UpdateIssueInput = z.infer<typeof updateIssueSchema>;
 export type ListQuery = z.infer<typeof listQuerySchema>;
-export type Analysis = z.infer<typeof analysisSchema> & { source: 'gemini' | 'rules' };
+export type Analysis = z.infer<typeof analysisSchema> & { source: 'gemini' | 'rules'; model?: string };
 
 export interface TimelineEntry {
   status: Status;

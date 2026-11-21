@@ -12,7 +12,7 @@ Progress → Resolved**, and administrators manage the queue from a dashboard.
 | Requirement | Where |
 | --- | --- |
 | Citizen reporting (title, description, location, category, optional image) | `client/src/components/ReportForm.tsx` — GPS via Geolocation API, client-side image compression, optional category hint |
-| AI classification with Google Gemini | `server/gemini.ts` — `@google/genai`, `gemini-2.5-flash`, multimodal (text + photo), structured JSON output enforced by a Zod-derived JSON schema |
+| AI classification with Google Gemini | `server/gemini.ts` — `@google/genai`, `gemini-3.5-flash-lite`, multimodal (text + photo), structured JSON output enforced by a Zod-derived JSON schema |
 | Priority detection | Gemini prompt defines Low / Medium / High / Critical by public risk; validated by `analysisSchema` |
 | Department recommendation | Gemini picks from a fixed department list; `DEPARTMENT_FOR` map in `server/classifier.ts` backs it up |
 | Issue tracking dashboard | `console/Overview.tsx` (KPIs, SLA breaches, status pipeline, department workload) + `TrackBoard.tsx` / `IssueDialog.tsx` (search, filters, status stepper, timeline, Google Maps embed) |
@@ -32,7 +32,7 @@ Progress → Resolved**, and administrators manage the queue from a dashboard.
 
 ## Architecture
 ```
-React 19 + Vite + Tailwind v4 + GSAP/Lenis  ──►  Express 5 API  ──►  Gemini 2.5 Flash
+React 19 + Vite + Tailwind v4 + GSAP/Lenis  ──►  Express 5 API  ──►  Gemini Flash-Lite (cascade)
        (client/)                                 (server/)            │ timeout / invalid output
                                                     │                 ▼
                                              IssueStore (JSON)    rule-based classifier

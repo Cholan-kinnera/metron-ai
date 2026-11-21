@@ -69,5 +69,6 @@ describe('applySafetyFloor', () => {
     const ai = { ...rules, priority: 'Low' as const, source: 'gemini' as const };
     expect(applySafetyFloor(ai, rules).priority).toBe('Critical');
     expect(applySafetyFloor({ ...ai, priority: 'Critical' }, { ...rules, priority: 'Low' }).priority).toBe('Critical');
+    expect(applySafetyFloor({ ...ai, priority: 'Low' }, { ...rules, priority: 'High' }).priority).toBe('Low');
   });
 });

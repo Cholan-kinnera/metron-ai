@@ -54,10 +54,21 @@ describe('analyzeIssue', () => {
       }),
     });
     const result = await analyzeIssue({ ...input, image: 'data:image/jpeg;base64,AAAA' });
-    expect(result).toMatchObject({ source: 'gemini', department: 'Electricity Board', confidence: 0.95 });
+    expect(result).toMatchObject({ source: 'gemini', model: 'gemini-3.5-flash-lite', department: 'Electricity Board', confidence: 0.95 });
     const call = generateContent.mock.calls[0][0];
     expect(call.config.responseMimeType).toBe('application/json');
     expect(call.contents[0].parts[1].inlineData).toEqual({ mimeType: 'image/jpeg', data: 'AAAA' });
+  });
+
+  it('cascades to the next model when the first is overloaded', async () => {
+    process.env.GEMINI_API_KEY = 'test';
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    generateContent.mockRejectedValueOnce(new Error('503 high demand')).mockResolvedValueOnce({
+      text: JSON.stringify({ category: 'Public Safety', priority: 'High', department: 'Police & Public Safety', summary: 's', reasoning: 'r', confidence: 0.7 }),
+    });
+    const result = await analyzeIssue({ ...input, description: 'Crowd blocking the road near the bus stand.' });
+    expect(generateContent).toHaveBeenCalledTimes(2);
+    expect(result).toMatchObject({ source: 'gemini', model: 'gemini-3.1-flash-lite' });
   });
 
   it('falls back to rules when Gemini returns invalid data', async () => {
@@ -67,5 +78,6 @@ describe('analyzeIssue', () => {
     expect((await analyzeIssue(input)).source).toBe('rules');
     generateContent.mockRejectedValue(new Error('quota'));
     expect((await analyzeIssue(input)).source).toBe('rules');
+    expect(generateContent).toHaveBeenCalledTimes(4);
   });
 });

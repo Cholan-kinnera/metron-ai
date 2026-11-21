@@ -296,7 +296,7 @@ export function Landing({ stats, aiMode }: { stats?: Stats; aiMode?: 'gemini' | 
             </div>
             <figure className="receipt land-reveal overflow-hidden rounded-2xl border border-white/10 bg-black/40 lg:mt-24">
               <figcaption className="flex items-center justify-between border-b border-white/10 px-6 py-4 font-mono text-xs text-slate-400">
-                <span>gemini-2.5-flash · response</span>
+                <span>gemini-3.5-flash-lite · response</span>
                 <span className="text-emerald-400">schema valid</span>
               </figcaption>
               <pre className="whitespace-pre-wrap break-words p-6 font-mono text-[13px] leading-relaxed">
