@@ -1,8 +1,8 @@
-# CivicResolve — AI-Powered Citizen Grievance Management
+# Metron AI — AI-Powered Citizen Grievance Management
 
-> Report it. We route it. Watch it get fixed.
+> Our solution to the **CivicResolve** challenge (PromptWars × GDG on Campus PSG iTech).
 
-CivicResolve lets citizens report potholes, overflowing garbage, broken streetlights, water leaks and other civic issues in
+Metron AI lets citizens report potholes, overflowing garbage, broken streetlights, water leaks and other civic issues in
 plain language (plus an optional photo). **Google Gemini** reads the text *and* the image, classifies the issue, judges its
 urgency, and routes it to the responsible municipal department. Every ticket is tracked publicly from **Reported → In
 Progress → Resolved**, and administrators manage the queue from a dashboard.
@@ -15,7 +15,7 @@ Progress → Resolved**, and administrators manage the queue from a dashboard.
 | AI classification with Google Gemini | `server/gemini.ts` — `@google/genai`, `gemini-2.5-flash`, multimodal (text + photo), structured JSON output enforced by a Zod-derived JSON schema |
 | Priority detection | Gemini prompt defines Low / Medium / High / Critical by public risk; validated by `analysisSchema` |
 | Department recommendation | Gemini picks from a fixed department list; `DEPARTMENT_FOR` map in `server/classifier.ts` backs it up |
-| Issue tracking dashboard | `TrackBoard.tsx` + `IssueDialog.tsx` — search, filters, status stepper, timeline, Google Maps embed |
+| Issue tracking dashboard | `console/Overview.tsx` (KPIs, SLA breaches, status pipeline, department workload) + `TrackBoard.tsx` / `IssueDialog.tsx` (search, filters, status stepper, timeline, Google Maps embed) |
 | Admin dashboard | `AdminPanel.tsx` — key-protected; update status / priority / department, delete, live stats |
 
 ## Google services used
@@ -23,6 +23,12 @@ Progress → Resolved**, and administrators manage the queue from a dashboard.
 - **Google Maps** — embedded map and deep links for every reported location.
 - **Google Fonts** — Fraunces + Manrope.
 - Built with **Google Antigravity**; deployable to **Cloud Run** via the included `Dockerfile`.
+
+## Beyond the brief
+- **SLA tracking** per priority (Critical 24h → Low 14d) with breach detection (`server/domain.ts`).
+- **Hazard safety floor** — Gemini may raise urgency but never downgrade a detected life-safety hazard (`applySafetyFloor`).
+- **Analytics** — resolution rate, median fix time, per-department workload (`server/analytics.ts`).
+- **Landing page** with GSAP ScrollTrigger storytelling, Lenis smooth scroll and glassmorphism UI.
 
 ## Architecture
 ```
@@ -38,7 +44,8 @@ React 19 + Vite + Tailwind v4 + GSAP/Lenis  ──►  Express 5 API  ──► 
 
 ## Security
 Helmet (strict CSP, no `x-powered-by`), per-IP rate limits (stricter on submissions), 3 MB body limit, Zod validation on
-every input (including image MIME/size via data-URL checks), constant-time admin-key comparison, secrets only via env vars.
+every input (including image MIME/size via data-URL checks), constant-time admin-key comparison, secrets only via env vars,
+and the server refuses to start in production without a strong `ADMIN_KEY`. See [SECURITY.md](SECURITY.md).
 
 ## Accessibility
 Skip link, landmarks, labelled form controls, `aria-live` results and errors, native `<dialog>` with focus management,
@@ -51,7 +58,7 @@ compression and immutable caching for hashed assets; deferred search input.
 
 ## Testing
 ```bash
-npm test        # 22 Vitest + Supertest tests: API, validation, auth, workflow, Gemini (mocked) + fallback, persistence
+npm test        # 28 Vitest + Supertest tests: API, validation, auth, workflow, Gemini (mocked) + fallback, safety floor, SLA, analytics, persistence
 npm run lint    # ESLint (typescript-eslint, react-hooks)
 npm run build   # strict tsc + Vite build
 ```
@@ -66,6 +73,6 @@ npm run build && npm start   # http://localhost:8080
 
 ## Deploy
 - **Render:** `render.yaml` blueprint — set `GEMINI_API_KEY`; `ADMIN_KEY` is generated.
-- **Cloud Run:** `gcloud run deploy civicresolve --source . --set-env-vars GEMINI_API_KEY=...,ADMIN_KEY=...`
+- **Cloud Run:** `gcloud run deploy metron-ai --source . --set-env-vars GEMINI_API_KEY=...,ADMIN_KEY=...`
 
 Data persists to `data/issues.json` (seeded with demo complaints). For multi-instance deployments, swap `IssueStore` for Firestore.

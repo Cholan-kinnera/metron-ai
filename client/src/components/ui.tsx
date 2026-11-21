@@ -53,9 +53,9 @@ export function StatusStepper({ status }: { status: Status }) {
 
 export function SectionHeading({ id, eyebrow, title, children }: { id: string; eyebrow: string; title: string; children?: ReactNode }) {
   return (
-    <header className="reveal mb-8 max-w-2xl">
+    <header className="mb-6 max-w-2xl">
       <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-signal-deep">{eyebrow}</p>
-      <h2 id={id} className="font-display text-4xl font-bold leading-tight md:text-5xl">{title}</h2>
+      <h1 id={id} className="font-display text-4xl font-bold leading-tight">{title}</h1>
       {children && <p className="mt-3 text-lg text-muted">{children}</p>}
     </header>
   );

@@ -28,7 +28,7 @@ export function ReportForm({ onCreated }: { onCreated: (issue: Issue) => void })
         gsap.from('.result-item', { y: 16, opacity: 0, stagger: 0.08, duration: 0.5, ease: 'power2.out' });
       }
     },
-    { scope: resultRef, dependencies: [result] },
+    { scope: resultRef, dependencies: [result], revertOnUpdate: true },
   );
 
   const locate = () => {
@@ -89,14 +89,14 @@ export function ReportForm({ onCreated }: { onCreated: (issue: Issue) => void })
   };
 
   return (
-    <section id="report" tabIndex={-1} className="mx-auto max-w-6xl scroll-mt-20 px-4 py-24 sm:px-6" aria-labelledby={`${ids}-h`}>
+    <section id="report" tabIndex={-1} className="scroll-mt-20" aria-labelledby={`${ids}-h`}>
       <SectionHeading id={`${ids}-h`} eyebrow="01 — Report" title="Tell us what's broken.">
         Describe it in your own words. Gemini reads the text and the photo, picks the category, judges urgency and routes it to the
         right department.
       </SectionHeading>
 
       <div className="grid gap-8 lg:grid-cols-[1.25fr_1fr]">
-        <form onSubmit={onSubmit} className="reveal card space-y-5 p-6 sm:p-8" aria-describedby={`${ids}-err`}>
+        <form onSubmit={onSubmit} className="card space-y-5 p-6 sm:p-8" aria-describedby={`${ids}-err`}>
           <div>
             <label htmlFor={`${ids}-title`} className="mb-1.5 block text-sm font-semibold">
               Title <span aria-hidden="true" className="text-red-700">*</span>
@@ -158,7 +158,7 @@ export function ReportForm({ onCreated }: { onCreated: (issue: Issue) => void })
           </button>
         </form>
 
-        <div ref={resultRef} tabIndex={-1} aria-live="polite" className="reveal">
+        <div ref={resultRef} tabIndex={-1} aria-live="polite">
           {submitting ? (
             <div className="card grid h-full min-h-72 place-items-center p-8 text-center" role="status">
               <div>

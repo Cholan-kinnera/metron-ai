@@ -83,7 +83,7 @@ describe('tracking', () => {
   it('reports aggregate stats', async () => {
     await request(app).post('/api/issues').send(validIssue);
     const res = await request(app).get('/api/stats').expect(200);
-    expect(res.body).toMatchObject({ total: 1, byStatus: { Reported: 1 }, byPriority: { Critical: 1 } });
+    expect(res.body).toMatchObject({ total: 1, open: 1, criticalOpen: 1, byStatus: { Reported: 1 }, byPriority: { Critical: 1 } });
   });
 });
 

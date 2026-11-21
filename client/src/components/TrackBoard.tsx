@@ -31,17 +31,17 @@ export function TrackBoard({ refreshKey, onOpen }: { refreshKey: number; onOpen:
         gsap.from('.issue-card', { y: 20, opacity: 0, duration: 0.45, stagger: 0.05, ease: 'power2.out' });
       }
     },
-    { scope: listRef, dependencies: [issues] },
+    { scope: listRef, dependencies: [issues], revertOnUpdate: true },
   );
 
   return (
-    <section id="track" tabIndex={-1} className="scroll-mt-20 border-y border-line bg-card/60 py-24" aria-labelledby={`${ids}-h`}>
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+    <section id="track" tabIndex={-1} className="scroll-mt-20" aria-labelledby={`${ids}-h`}>
+      <div>
         <SectionHeading id={`${ids}-h`} eyebrow="02 — Track" title="Every complaint, in the open.">
           Search by ticket ID, street or keyword. Urgent issues float to the top.
         </SectionHeading>
 
-        <div className="reveal mb-6 grid gap-3 sm:grid-cols-[2fr_1fr_1fr]" role="search">
+        <div className="mb-6 grid gap-3 sm:grid-cols-[2fr_1fr_1fr]" role="search">
           <label className="sr-only" htmlFor={`${ids}-q`}>Search issues</label>
           <input id={`${ids}-q`} type="search" className="field" placeholder="Search CR-1234, street, title…" value={search} onChange={(e) => setSearch(e.target.value)} />
           <label className="sr-only" htmlFor={`${ids}-s`}>Filter by status</label>

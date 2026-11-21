@@ -1,12 +1,8 @@
+import type { Analytics } from '../../server/analytics';
 import type { CreateIssueInput, Issue, ListQuery, UpdateIssueInput } from '../../server/schema';
 
 export type IssueSummary = Omit<Issue, 'image'> & { hasImage: boolean };
-export interface Stats {
-  total: number;
-  byStatus: Record<string, number>;
-  byCategory: Record<string, number>;
-  byPriority: Record<string, number>;
-}
+export type Stats = Analytics;
 
 /** Error carrying the server's validation message for display. */
 export class ApiError extends Error {

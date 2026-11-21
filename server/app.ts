@@ -5,6 +5,7 @@ import express, { type NextFunction, type Request, type Response } from 'express
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import { ZodError } from 'zod';
+import { computeAnalytics } from './analytics.js';
 import { analyzeIssue } from './gemini.js';
 import { createIssueSchema, listQuerySchema, updateIssueSchema, type Issue } from './schema.js';
 import type { IssueStore } from './store.js';
@@ -75,7 +76,7 @@ export function createApp({ store, adminKey, clientDir }: AppOptions) {
   });
 
   api.get('/stats', (_req, res) => {
-    res.json(store.stats());
+    res.json(computeAnalytics(store.all()));
   });
 
   api.get('/admin/verify', requireAdmin, (_req, res) => {

@@ -4,7 +4,7 @@ import type { UpdateIssueInput } from '../../../server/schema';
 import { api, type IssueSummary, type Stats } from '../api';
 import { SectionHeading } from './ui';
 
-const KEY_STORAGE = 'civicresolve-admin-key';
+const KEY_STORAGE = 'metron-ai-admin-key';
 
 function readKey(): string {
   try {
@@ -81,13 +81,13 @@ export function AdminPanel({ stats, onChanged, onOpen }: { stats?: Stats; onChan
   const maxCount = Math.max(1, ...categoryRows.map(([, n]) => n));
 
   return (
-    <section id="admin" tabIndex={-1} className="mx-auto max-w-6xl scroll-mt-20 px-4 py-24 sm:px-6" aria-labelledby={`${ids}-h`}>
+    <section id="admin" tabIndex={-1} className="scroll-mt-20" aria-labelledby={`${ids}-h`}>
       <SectionHeading id={`${ids}-h`} eyebrow="03 — Admin" title="Run the queue.">
         Review AI triage, reassign departments, override urgency and move tickets to resolution.
       </SectionHeading>
 
       {!authed ? (
-        <form onSubmit={onLogin} className="reveal card flex max-w-lg flex-col gap-3 p-6 sm:flex-row">
+        <form onSubmit={onLogin} className="card flex max-w-lg flex-col gap-3 p-6 sm:flex-row">
           <label htmlFor={`${ids}-key`} className="sr-only">Admin key</label>
           <input id={`${ids}-key`} type="password" className="field" placeholder="Admin key" value={key} onChange={(e) => setKey(e.target.value)} autoComplete="current-password" required />
           <button type="submit" className="btn-primary shrink-0">Unlock</button>

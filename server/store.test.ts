@@ -2,6 +2,7 @@ import { mkdtemp, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { computeAnalytics } from './analytics.js';
 import { classifyByRules } from './classifier.js';
 import { seedDemoData } from './seed.js';
 import { IssueStore } from './store.js';
@@ -16,7 +17,7 @@ describe('IssueStore persistence', () => {
 
     const reloaded = new IssueStore(file);
     await reloaded.load();
-    expect(reloaded.stats().byStatus).toEqual({ Reported: 2, 'In Progress': 2, Resolved: 1 });
+    expect(computeAnalytics(reloaded.all()).byStatus).toEqual({ Reported: 2, 'In Progress': 2, Resolved: 1 });
     await seedDemoData(reloaded);
     expect(reloaded.size).toBe(5);
   });

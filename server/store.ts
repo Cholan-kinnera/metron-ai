@@ -107,12 +107,8 @@ export class IssueStore {
     return removed;
   }
 
-  stats() {
-    const count = (key: 'status' | 'category' | 'priority') =>
-      [...this.issues.values()].reduce<Record<string, number>>((acc, i) => {
-        acc[i[key]] = (acc[i[key]] ?? 0) + 1;
-        return acc;
-      }, {});
-    return { total: this.issues.size, byStatus: count('status'), byCategory: count('category'), byPriority: count('priority') };
+  /** All issues in insertion order. */
+  all(): Issue[] {
+    return [...this.issues.values()];
   }
 }

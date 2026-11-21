@@ -17,5 +17,5 @@ await seedDemoData(store);
 
 const clientDir = fileURLToPath(new URL('../dist', import.meta.url));
 createApp({ store, adminKey, clientDir }).listen(port, () => {
-  console.log(`CivicResolve listening on http://localhost:${port} (AI: ${process.env.GEMINI_API_KEY ? 'Gemini' : 'rules fallback'})`);
+  console.log(`Metron AI listening on http://localhost:${port} (AI: ${process.env.GEMINI_API_KEY ? 'Gemini' : 'rules fallback'})`);
 });
